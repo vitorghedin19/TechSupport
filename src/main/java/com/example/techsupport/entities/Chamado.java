@@ -12,13 +12,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Chamado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
-    public String nome;
-    public String cpf;
-    public String senha;
-    public String email;
+    public String titulo;
+    public String descricao;
+    public String prioridade;
+    public Status status;
+
+    public enum Status{
+        ABERTO,
+        EM_ANDAMENTO,
+        RESOLVIDO,
+        FECHADO,
+        ATRASADO
+    }
 }

@@ -1,10 +1,11 @@
 package com.example.techsupport.controllers;
 
 import com.example.techsupport.entities.Usuario;
+import com.example.techsupport.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,13 +13,21 @@ import java.util.List;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     @GetMapping
     public ResponseEntity<?> listarTodos(){
 
-        List<Usuario> usuarios = List.of(new Usuario(1L, "Vitor", "13325053920", "123456", "vitor@gmail.com"));
+        return ResponseEntity.ok(usuarioRepository.findAll());
+    }
 
-        return ResponseEntity.ok(usuarios);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario){
 
+        var usuarioBanco = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(usuarioBanco);
     }
 
 }
