@@ -1,4 +1,39 @@
 package com.example.techsupport.controllers;
 
+import com.example.techsupport.DTOs.LoginRequest;
+import com.example.techsupport.services.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.HttpURLConnection;
+
+@RestController
+@RequestMapping("/auth")
+@Tag(description = "Controller de autenticação", name = "Autenticação")
 public class AuthController {
+
+    private final TokenService tokenService;
+
+    public AuthController(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
+    @PostMapping
+    @Operation(description = "Método de login", summary = "Autenticação de usuários")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+
+        if (loginRequest.email().equals("string") && loginRequest.senha().equals("string")){
+
+            var token = tokenService.gerarToken(loginRequest.email());
+
+            return ResponseEntity.ok("");
+        }
+        return ResponseEntity.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
+    }
+
 }
