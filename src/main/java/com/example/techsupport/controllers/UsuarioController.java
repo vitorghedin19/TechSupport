@@ -16,7 +16,7 @@ import java.util.List;
 @Tag(name = "Usuários", description = "Endpoints responsáveis pelo gerenciamento de usuários do sistema TechSupport, permitindo consultar e cadastrar usuários.")
 public class UsuarioController {
 
-    @Autowired
+    @Autowired //injeção de dependencia
     private UsuarioRepository usuarioRepository;
 
     @GetMapping
