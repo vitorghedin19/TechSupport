@@ -1,5 +1,6 @@
 package com.example.techsupport.entities;
 
+import ch.qos.logback.core.status.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,17 +17,9 @@ public class Chamado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
-    public String titulo;
-    public String descricao;
-    public String prioridade;
-    public Status status;
-
-    public enum Status{
-        ABERTO,
-        EM_ANDAMENTO,
-        RESOLVIDO,
-        FECHADO,
-        ATRASADO
-    }
+    private Long id;
+    private String titulo;
+    private String descricao;
+    private String prioridade;
+    private EnumStatusChamado status = EnumStatusChamado.ABERTO;
 }

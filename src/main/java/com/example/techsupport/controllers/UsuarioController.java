@@ -1,5 +1,7 @@
 package com.example.techsupport.controllers;
 
+import com.example.techsupport.DTOs.AtualizarStatusRequest;
+import com.example.techsupport.entities.EnumStatusUsuario;
 import com.example.techsupport.entities.Usuario;
 import com.example.techsupport.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +28,15 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if (usuarioBanco != null) {
+            return ResponseEntity.ok(usuarioBanco);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Método de criação de usuários!", description = "Método reponsável em efetuar a criação de novos usuários!")
@@ -35,4 +46,51 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioBanco);
     }
 
+    @PatchMapping("/{id}/status") //serve para atualizar um dado apenas
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if (usuarioBanco != null) {
+            usuarioBanco.setStatus(statusRequest.statusUsuario());
+            usuarioRepository.save(usuarioBanco);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
+
+        try {
+            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+            if ( usuarioBanco != null ){
+                usuarioBanco.setStatus(usuario.getStatus());
+                usuarioBanco.setCpf(usuario.getCpf());
+                usuarioBanco.setEmail(usuario.getEmail());
+                usuarioBanco.setNome(usuario.getNome());
+                usuarioBanco.setSenha(usuario.getSenha());
+                usuarioRepository.save(usuarioBanco);
+                return ResponseEntity.ok().build();
+            }
+
+            return ResponseEntity.notFound().build();
+
+        } catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/{id}/excluir")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if (usuarioBanco != null) {
+            usuarioBanco.setStatus(EnumStatusUsuario.EXCLUIDO);
+            usuarioRepository.save(usuarioBanco);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
 }
