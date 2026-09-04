@@ -16,8 +16,9 @@ public class Solicitante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
-    public String nome;
-    public String email;
-    public String setor;
+    private Long id;
+    private String nome;
+    private String email;
+    private String setor;
+    private EnumStatusSolicitante status = EnumStatusSolicitante.ATIVO;
 }

@@ -17,8 +17,8 @@ public class Equipamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
-    public String equipamento;
-    public String tipo;
-
+    private Long id;
+    private String equipamento;
+    private String tipo;
+    private EnumStatusEquipamento status = EnumStatusEquipamento.ATIVO;
 }
