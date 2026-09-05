@@ -31,18 +31,8 @@ export default function Home() {
 
           {/* Botão de Login */}
           <div className="flex items-center gap-4">
-            <a
-              href="#login"
-              className="px-5 py-2.5 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors hidden sm:inline-block"
-            >
-              Entrar
-            </a>
-            <a
-              href="#login"
-              className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Acessar Sistema
-            </a>
+            <a href="/login" className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >Acessar Sistema</a>
           </div>
         </div>
       </header>
@@ -215,13 +205,13 @@ export default function Home() {
           </p>
 
           <div className="flex items-center gap-4 text-sm">
-            <a href="#login" className="hover:text-white transition-colors">
+            <a href="/login" className="hover:text-white transition-colors">
               Termos
             </a>
-            <a href="#login" className="hover:text-white transition-colors">
+            <a href="/login" className="hover:text-white transition-colors">
               Privacidade
             </a>
-            <a href="#login" className="text-blue-400 font-medium hover:underline">
+            <a href="/login" className="text-blue-400 font-medium hover:underline">
               Fazer Login
             </a>
           </div>
