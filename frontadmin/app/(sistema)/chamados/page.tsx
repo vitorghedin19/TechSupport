@@ -1,4 +1,29 @@
+"use client"
+
+import { Chamados } from "@/app/types/chamados";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 export default function Chamado(){
+
+    const [chamados,setChamados] = useState<Chamados[]>([])
+
+    useEffect(() => {
+        carregarDados();
+    }, []);
+
+    const carregarDados = async ()=>{
+
+        try{
+        const dados = await axios.get<Chamados[]>("http://localhost:8080/chamado")
+
+        setChamados (dados.data);
+    
+    } catch (error){
+        alert("Erro ao carregar dados!")
+    }
+    }
+
     return(
 
         <div className="min-h-screen bg-slate-950 px-6 py-10">
@@ -9,15 +34,39 @@ export default function Chamado(){
 
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
             <table className="w-full text-left">
-                <thead className="bg-slate-800/60">
+                 <thead className="bg-slate-800/60">
                     <tr>
-                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Solicitante</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Código</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Título</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Descrição</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Prioridade</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
                     </tr>
                 </thead>
+
                 <tbody className="divide-y divide-slate-800">
-                    <tr>
-                        <td className="px-4 py-3 text-slate-100">Jão</td>
+                    {chamados.map((chamado)=>(
+
+                    <tr key={chamado.id}>
+                        <td className="px-4 py-3 text-slate-100">{chamado.id}</td>
+                        <td className="px-4 py-3 text-slate-100">{chamado.titulo}</td>
+                        <td className="px-4 py-3 text-slate-100">{chamado.descricao}</td>
+                        <td className="px-4 py-3 text-slate-100">{chamado.prioridade}</td>
+                        <td className="px-4 py-3 text-slate-100">{chamado.status}</td>
                     </tr>
+                    ))}
+
+                    { chamados.length ===0 && 
+                    (
+
+                        <tr>
+                            <td colSpan={5} className="px-6 py-12 texte-center text-slate-300">
+                                Nenhum chamado encontrado!
+                            </td>
+                        </tr>
+
+                    )
+                    }
                 </tbody>
             </table>
         </div>

@@ -1,4 +1,28 @@
+"use client"
+
+import { Usuario } from "@/app/types/usuario";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 export default function Usuarios(){
+
+    const [usuarios,setUsuarios] = useState<Usuario[]>([])
+
+    useEffect(() => {
+        carregarDados();
+    }, []);
+
+    const carregarDados = async ()=>{
+
+        try{
+        const dados = await axios.get<Usuario[]>("http://localhost:8080/usuarios")
+
+        setUsuarios (dados.data);
+    
+    } catch (error){
+        alert("Erro ao carregar dados!")
+    }
+    }
 
     return(
     
@@ -12,13 +36,39 @@ export default function Usuarios(){
             <table className="w-full text-left">
                 <thead className="bg-slate-800/60">
                     <tr>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Código</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Nome</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">CPF</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">E-mail</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
                     </tr>
                 </thead>
+                
                 <tbody className="divide-y divide-slate-800">
-                    <tr>
-                        <td className="px-4 py-3 text-slate-100">Vitor</td>
+
+                    {usuarios.map((usuario)=>(
+
+                    <tr key={usuario.id}>
+                        <td className="px-4 py-3 text-slate-100">{usuario.id}</td>
+                        <td className="px-4 py-3 text-slate-100">{usuario.nome}</td>
+                        <td className="px-4 py-3 text-slate-100">{usuario.cpf}</td>
+                        <td className="px-4 py-3 text-slate-100">{usuario.email}</td>
+                        <td className="px-4 py-3 text-slate-100">{usuario.status}</td>
                     </tr>
+                    ))}
+
+                    { usuarios.length ===0 && 
+                    (
+
+                        <tr>
+                            <td colSpan={5} className="px-6 py-12 texte-center text-slate-300">
+                                Nenhum usuário encontrado!
+                            </td>
+                        </tr>
+
+                    )
+                    }
+
                 </tbody>
             </table>
         </div>
