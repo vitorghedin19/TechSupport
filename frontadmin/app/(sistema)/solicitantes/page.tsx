@@ -35,11 +35,13 @@ export default function Solicitantes(){
         <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
             <table className="w-full text-left">
                 <thead className="bg-slate-800/60">
+                <tr>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Código</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Nome</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Email</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Setor</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
+                </tr>
                 </thead>
                 
                 <tbody className="divide-y divide-slate-800">
