@@ -1,4 +1,4 @@
-export class Equipamentos{
+export class Equipamento{
 
     constructor(
         public id:number | null,

@@ -1,4 +1,4 @@
-export class Chamados{
+export class Chamado{
 
     constructor(
         public id:number | null,

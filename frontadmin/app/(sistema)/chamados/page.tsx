@@ -1,12 +1,13 @@
 "use client"
 
-import { Chamados } from "@/app/types/chamados";
+
+import { Chamado } from "@/app/types/chamado";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function Chamado(){
+export default function Chamados(){
 
-    const [chamados,setChamados] = useState<Chamados[]>([])
+    const [chamados,setChamados] = useState<Chamado[]>([])
 
     useEffect(() => {
         carregarDados();
@@ -15,7 +16,7 @@ export default function Chamado(){
     const carregarDados = async ()=>{
 
         try{
-        const dados = await axios.get<Chamados[]>("http://localhost:8080/chamado")
+        const dados = await axios.get<Chamado[]>("http://localhost:8080/chamado")
 
         setChamados (dados.data);
     

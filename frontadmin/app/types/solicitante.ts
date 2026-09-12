@@ -1,4 +1,4 @@
-export class Solicitantes{
+export class Solicitante{
 
     constructor(
         public id:number | null,

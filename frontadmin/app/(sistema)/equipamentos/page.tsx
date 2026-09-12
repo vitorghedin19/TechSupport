@@ -1,12 +1,12 @@
 "use client"
 
-import { Equipamentos } from "@/app/types/equipamentos";
+import { Equipamento } from "@/app/types/equipamento";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Equipamentos(){
     
-    const [equipamentos,setEquipamentos] = useState<Equipamentos[]>([])
+    const [equipamentos,setEquipamentos] = useState<Equipamento[]>([])
 
     useEffect(() => {
         carregarDados();
@@ -15,7 +15,7 @@ export default function Equipamentos(){
     const carregarDados = async ()=>{
 
         try{
-        const dados = await axios.get<Equipamentos[]>("http://localhost:8080/equipamento")
+        const dados = await axios.get<Equipamento[]>("http://localhost:8080/equipamento")
 
         setEquipamentos (dados.data);
     
