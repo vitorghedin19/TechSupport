@@ -3,6 +3,7 @@
 
 import { Chamado } from "@/app/types/chamado";
 import axios from "axios";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Chamados(){
@@ -27,13 +28,13 @@ export default function Chamados(){
 
     return(
 
-        <div className="min-h-screen bg-slate-950 px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
+        <div className="min-h-screen bg-slate-950 px-6 py-8">
+        <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de chamados</h1>
-            <link href="/chamados/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition" />
+            <Link href="/chamados/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Chamado</Link>
         </div>
 
-        <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+        <div className="max-w-5xl mx-auto rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
             <table className="w-full text-left">
                  <thead className="bg-slate-800/60">
                     <tr>
@@ -42,18 +43,20 @@ export default function Chamados(){
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Descrição</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Prioridade</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Ações</th>
                     </tr>
                 </thead>
 
                 <tbody className="divide-y divide-slate-800">
                     {chamados.map((chamado)=>(
 
-                    <tr key={chamado.id}>
+                    <tr key={chamado.id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="px-4 py-3 text-slate-100">{chamado.id}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.titulo}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.descricao}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.prioridade}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.status}</td>
+                        <td className="px-4 py-3 text-slate-100"><Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link></td>
                     </tr>
                     ))}
 
@@ -61,7 +64,7 @@ export default function Chamados(){
                     (
 
                         <tr>
-                            <td colSpan={5} className="px-6 py-12 texte-center text-slate-300">
+                            <td colSpan={6} className="px-6 py-12 text-center text-slate-300">
                                 Nenhum chamado encontrado!
                             </td>
                         </tr>

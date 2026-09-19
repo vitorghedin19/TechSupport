@@ -2,6 +2,7 @@
 
 import { Usuario } from "@/app/types/usuario";
 import axios from "axios";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Usuarios(){
@@ -26,13 +27,13 @@ export default function Usuarios(){
 
     return(
     
-    <div className="min-h-screen bg-slate-950 px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen bg-slate-950 px-6 py-8">
+        <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de usuários</h1>
-            <link href="/usuarios/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition" />
+            <Link href="/usuarios/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Usuário</Link>
         </div>
 
-        <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+        <div className="max-w-5xl mx-auto rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
             <table className="w-full text-left">
                 <thead className="bg-slate-800/60">
                     <tr>
@@ -41,6 +42,7 @@ export default function Usuarios(){
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">CPF</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">E-mail</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Ações</th>
                     </tr>
                 </thead>
                 
@@ -48,12 +50,13 @@ export default function Usuarios(){
 
                     {usuarios.map((usuario)=>(
 
-                    <tr key={usuario.id}>
+                    <tr key={usuario.id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="px-4 py-3 text-slate-100">{usuario.id}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.nome}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.cpf}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.email}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.status}</td>
+                        <td className="px-4 py-3 text-slate-100"><Link href={`/usuarios/${usuario.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link></td>
                     </tr>
                     ))}
 
@@ -61,7 +64,7 @@ export default function Usuarios(){
                     (
 
                         <tr>
-                            <td colSpan={5} className="px-6 py-12 texte-center text-slate-300">
+                            <td colSpan={5} className="px-6 py-12 text-center text-slate-300">
                                 Nenhum usuário encontrado!
                             </td>
                         </tr>
