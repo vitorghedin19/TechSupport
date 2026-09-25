@@ -120,14 +120,14 @@ public class ChamadoController {
         }
     }
 
-    // DELETE /chamado/{id}/fechar -> "fecha" o chamado. NÃO apaga a linha do banco: só define o status FECHADO.
+    // DELETE /chamado/{id}/excluir -> "exclui" o chamado. NÃO apaga a linha do banco: só define o status EXCLUIDO.
     // É onde a regra de negócio "exigir solução no histórico antes de fechar" deveria ser verificada.
-    @DeleteMapping("/{id}/fechar")
-    @Operation(summary = "Método de fechar chamados!", description = "Método reponsável em fechar chamados!")
-    public ResponseEntity<Void> fechar(@PathVariable Long id) {
+    @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Método de excluir chamados!", description = "Método reponsável em excluir chamados!")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
         if (chamadoBanco != null) {
-            chamadoBanco.setStatus(EnumStatusChamado.FECHADO);
+            chamadoBanco.setStatus(EnumStatusChamado.EXCLUIDO);
             chamadoRepository.save(chamadoBanco);
             return ResponseEntity.ok().build();
         }

@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import SolicitanteForm from "../../components/SolicitanteForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Solicitante } from "@/app/types/solicitante";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
 export default function EditarSolicitante(){
@@ -10,6 +13,30 @@ export default function EditarSolicitante(){
     const parametro = useParams();
 
     const codigo = Number(parametro.codigo);
+
+    const [solicitante, setSolicitante] = useState<Solicitante|null>(null);
+
+
+    const router = useRouter();
+
+    useEffect(()=>{
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async() => {
+
+        const valorSolicitanteBack = await axios.get<Solicitante>('http://localhost:8080/solicitante/'+codigo)
+
+        if(valorSolicitanteBack.status==200){
+            setSolicitante(valorSolicitanteBack.data);
+        }else{
+        router.push("/solicitante")}
+
+    }
+
+    if(!solicitante) return(<div className="p-8">Carregando Dados ...</div>)
 
     return(
 
@@ -33,7 +60,7 @@ export default function EditarSolicitante(){
                 </div>
 
                 <div className="w-full">
-                    <SolicitanteForm />
+                    <SolicitanteForm solicitanteExistente={solicitante}/>
                 </div>
 
             </div>

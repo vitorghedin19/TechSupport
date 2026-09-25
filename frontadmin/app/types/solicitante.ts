@@ -9,3 +9,7 @@ export class Solicitante{
     ){}
 
 }
+
+export interface SolicitanteFormProps{
+    solicitanteExistente?:Solicitante
+}

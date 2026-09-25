@@ -24,6 +24,47 @@ export default function Equipamentos(){
         alert("Erro ao carregar dados!")
     }
     }
+
+    const handlerDeletarEquipamento = async(equipamento:Equipamento) => {
+
+        var dadosRetorno = await axios.delete('http://localhost:8080/equipamento/' +equipamento.id+'/excluir')
+
+        if(dadosRetorno.status==200){
+            alert("Equipamento excluído com sucesso");
+            
+        }else{
+            alert("dadosRetorno.data");
+            return;
+        }
+
+        carregarDados();
+
+    }
+
+    const handleAlterarStatusEquipamento = async(equipamento:Equipamento) =>{
+
+
+        var novoStatus = {};
+        if(equipamento.status ==="ATIVO"){
+            novoStatus = {statusEquipamento:"EXCLUIDO"}
+        }else{
+            novoStatus = {statusEquipamento:"ATIVO"}
+        }
+
+        var dadosRetorno = await  
+        axios.patch('http://localhost:8080/equipamento/'+equipamento.id+'/status',novoStatus);
+
+        if(dadosRetorno.status==200){
+            alert("Atualizado status com sucesso!");
+        }else{
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
+
+    }
     
     return(
     
@@ -41,7 +82,7 @@ export default function Equipamentos(){
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Equipamento</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Tipo</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
-                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Ações</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300 text-center">Ações</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
@@ -52,7 +93,21 @@ export default function Equipamentos(){
                         <td className="px-4 py-3 text-slate-100">{equipamento.equipamento}</td>
                         <td className="px-4 py-3 text-slate-100">{equipamento.tipo}</td>
                         <td className="px-4 py-3 text-slate-100">{equipamento.status}</td>
-                        <td className="px-4 py-3 text-slate-100"><Link href={`/equipamentos/${equipamento.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link></td>
+                        <td className="px-4 py-3">
+                            <div className="flex items-center justify-center gap-4">
+                                <Link href={`/equipamentos/${equipamento.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
+                                <button onClick={()=> handlerDeletarEquipamento(equipamento)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
+                                <button onClick = {()=> handleAlterarStatusEquipamento(equipamento)}
+                                       className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${equipamento.status ==='EXCLUIDO'
+                                         ?'text-red-400 border-red-500/40 bg-orange-500/10 hover:bg-red-500/20' 
+                                         :'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20' }`
+                                         }>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-3.5 h-3.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                        </svg>
+                                        {equipamento.status}</button>
+                            </div>
+                        </td>
                     </tr>
                     ))}
 

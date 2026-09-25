@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import EquipamentoForm from "../../components/EquipamentoForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Equipamento } from "@/app/types/equipamento";
+import axios from "axios";
 
 
 export default function EditarEquipamento(){
@@ -10,6 +13,30 @@ export default function EditarEquipamento(){
     const parametro = useParams();
 
     const codigo = Number(parametro.codigo);
+
+    const [equipamento, setEquipamento] = useState<Equipamento|null>(null);
+
+
+    const router = useRouter();
+
+    useEffect(()=>{
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async() => {
+
+        const valorEquipamentoBack = await axios.get<Equipamento>('http://localhost:8080/equipamento/'+codigo)
+
+        if(valorEquipamentoBack.status==200){
+            setEquipamento(valorEquipamentoBack.data);
+        }else{
+        router.push("/equipamentos")}
+
+    }
+
+    if(!equipamento) return(<div className="p-8">Carregando Dados ...</div>)
 
     return(
 
@@ -33,7 +60,7 @@ export default function EditarEquipamento(){
                 </div>
 
                 <div className="w-full">
-                    <EquipamentoForm />
+                    <EquipamentoForm equipamentoExistente={equipamento}/>
                 </div>
 
             </div>

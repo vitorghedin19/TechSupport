@@ -8,3 +8,6 @@ export class Equipamento{
     ){}
 
 }
+export interface EquipamentoFormProps{
+    equipamentoExistente?:Equipamento
+}

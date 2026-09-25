@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import ChamadoForm from "../../components/ChamadoForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Chamado } from "@/app/types/chamado";
+import axios from "axios";
 
 
 export default function EditarChamado(){
@@ -10,6 +13,30 @@ export default function EditarChamado(){
     const parametro = useParams();
 
     const codigo = Number(parametro.codigo);
+
+    const [chamado, setChamado] = useState<Chamado|null>(null);
+
+
+    const router = useRouter();
+
+    useEffect(()=>{
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async() => {
+
+        const valorChamadoBack = await axios.get<Chamado>('http://localhost:8080/chamado/'+codigo)
+
+        if(valorChamadoBack.status==200){
+            setChamado(valorChamadoBack.data);
+        }else{
+        router.push("/chamados")}
+
+    }
+
+    if(!chamado) return(<div className="p-8">Carregando Dados ...</div>)
 
     return(
 
@@ -33,7 +60,7 @@ export default function EditarChamado(){
                 </div>
 
                 <div className="w-full">
-                    <ChamadoForm />
+                    <ChamadoForm chamadoExistente={chamado}/>
                 </div>
 
             </div>

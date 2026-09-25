@@ -1,9 +1,61 @@
+'use client'
+import { Equipamento, EquipamentoFormProps } from "@/app/types/equipamento";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function EquipamentoForm(){
+export default function EquipamentoForm({equipamentoExistente}:EquipamentoFormProps){
+
+    const router = useRouter();
+
+    const [equipamento, setEquipamento] = useState<Equipamento>(
+    equipamentoExistente ||
+    new Equipamento(null, "", "", "ATIVO"));
+
+    const handlerChange = ( campo: 'equipamento' | 'tipo' | 'status', valor:string) => {
+        setEquipamento(valorAnterior => 
+            new Equipamento(
+                valorAnterior.id,
+                campo === 'equipamento' ? valor : valorAnterior.equipamento,
+                campo === 'tipo' ? valor : valorAnterior.tipo,
+                campo === 'status' ? valor : valorAnterior.status
+            )
+        )
+    }
+
+    const handlerSalvar = async (formData : FormData) => {
+
+        if(equipamentoExistente){
+
+             var dadosRetorno = await axios.put<number>('http://localhost:8080/equipamento/'+equipamento.id,equipamento)
+
+        if(dadosRetorno.status==200){
+            alert("Equipamento foi salvo com sucesso");
+            
+        }else{
+            alert("dadosRetorno.data");
+            return;
+        }
+
+        }else{
+        var dadosRetorno = await axios.post<number>('http://localhost:8080/equipamento',equipamento)
+
+        if(dadosRetorno.status==200){
+            alert("Equipamento foi salvo com sucesso");
+            
+        }else{
+            alert("dadosRetorno.data");
+            return;
+        }
+    }
+        router.push("/equipamentos");
+
+    }
+
     return(
 
-        <form className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">
+        <form action={handlerSalvar} className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">
 
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
 
@@ -17,7 +69,11 @@ export default function EquipamentoForm(){
                     <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         Nome do Equipamento
                     </label>
-                    <input name="equipamento" placeholder="Digite o nome do equipamento" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                    <input name="equipamento" 
+                    value={equipamento.equipamento} 
+                    required
+                    onChange={(e) => handlerChange('equipamento',e.target.value)}
+                    placeholder="Digite o nome do equipamento" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -25,13 +81,21 @@ export default function EquipamentoForm(){
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                             Tipo
                         </label>
-                        <input name="tipo" placeholder="Ex: Notebook, Monitor" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                        <input name="tipo" 
+                        value={equipamento.tipo}
+                        required
+                        onChange={(e) => handlerChange('tipo',e.target.value)}
+                        placeholder="Ex: Notebook, Monitor" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                     </div>
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                             Status
                         </label>
-                        <input name="status" placeholder="Ex: Disponível" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                        <input name="status"
+                        value={equipamento.status}
+                        required
+                        onChange={(e) => handlerChange('status',e.target.value)}
+                        placeholder="Ex: Disponível" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                     </div>
                 </div>
 

@@ -9,3 +9,6 @@ export class Chamado{
     ){}
 
 }
+export interface ChamadoFormProps{
+    chamadoExistente?:Chamado
+}

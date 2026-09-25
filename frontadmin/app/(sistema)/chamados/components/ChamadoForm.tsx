@@ -1,9 +1,62 @@
+'use client'
+import { Chamado, ChamadoFormProps } from "@/app/types/chamado";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function ChamadoForm(){
+export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
+
+    const router = useRouter();
+
+    const [chamado, setChamado] = useState<Chamado>(
+    chamadoExistente ||
+    new Chamado(null, "", "", "", "ABERTO"));
+
+    const handlerChange = ( campo: 'titulo' | 'descricao' | 'prioridade' | 'status', valor:string) => {
+        setChamado(valorAnterior => 
+            new Chamado(
+                valorAnterior.id,
+                campo === 'titulo' ? valor : valorAnterior.titulo,
+                campo === 'descricao' ? valor : valorAnterior.descricao,
+                campo === 'prioridade' ? valor : valorAnterior.prioridade,
+                campo === 'status' ? valor : valorAnterior.status
+            )
+        )
+    }
+
+    const handlerSalvar = async (formData : FormData) => {
+
+        if(chamadoExistente){
+
+             var dadosRetorno = await axios.put<number>('http://localhost:8080/chamado/'+chamado.id,chamado)
+
+        if(dadosRetorno.status==200){
+            alert("Chamado foi salvo com sucesso");
+            
+        }else{
+            alert("dadosRetorno.data");
+            return;
+        }
+
+        }else{
+        var dadosRetorno = await axios.post<number>('http://localhost:8080/chamado',chamado)
+
+        if(dadosRetorno.status==200){
+            alert("Chamado foi salvo com sucesso");
+            
+        }else{
+            alert("dadosRetorno.data");
+            return;
+        }
+    }
+        router.push("/chamados");
+
+    }
+
     return(
 
-        <form className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">
+        <form action={handlerSalvar} className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">
 
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
 
@@ -17,14 +70,22 @@ export default function ChamadoForm(){
                     <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         Título
                     </label>
-                    <input name="titulo" placeholder="Digite o título do chamado" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                    <input name="titulo" 
+                    value={chamado.titulo} 
+                    required
+                    onChange={(e) => handlerChange('titulo',e.target.value)}
+                    placeholder="Digite o título do chamado" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                         Descrição
                     </label>
-                    <textarea name="descricao" rows={4} placeholder="Descreva o problema ou solicitação" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 resize-none"></textarea>
+                    <textarea name="descricao" 
+                    value={chamado.descricao}
+                    required
+                    onChange={(e) => handlerChange('descricao',e.target.value)}
+                    rows={4} placeholder="Descreva o problema ou solicitação" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 resize-none"></textarea>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -32,13 +93,21 @@ export default function ChamadoForm(){
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                             Prioridade
                         </label>
-                        <input name="prioridade" placeholder="Ex: Alta, Média, Baixa" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                        <input name="prioridade" 
+                        value={chamado.prioridade}
+                        required
+                        onChange={(e) => handlerChange('prioridade',e.target.value)}
+                        placeholder="Ex: Alta, Média, Baixa" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                     </div>
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                             Status
                         </label>
-                        <input name="status" placeholder="Ex: Aberto" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
+                        <input name="status" 
+                        value={chamado.status}
+                        required
+                        onChange={(e) => handlerChange('status',e.target.value)}
+                        placeholder="Ex: Aberto" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"></input>
                     </div>
                 </div>
 
