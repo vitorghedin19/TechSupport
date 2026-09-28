@@ -1,18 +1,30 @@
 'use client'
+// 'use client' (linha acima): obrigatório, pois este componente usa hooks (useState, useRouter) e eventos (onChange).
+// UsuarioFormProps é a interface que define a prop opcional usuarioExistente (veja app/types/usuario.ts).
 import { Usuario, UsuarioFormProps } from "@/app/types/usuario";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// UsuarioForm: formulário ÚNICO reaproveitado para CRIAR e EDITAR usuário.
+// Se a prop usuarioExistente vier preenchida (página [codigo]/editar) = modo EDIÇÃO; se vier vazia (página novo) = modo CRIAÇÃO.
+// A desestruturação ({usuarioExistente}) pega só essa prop do objeto de props recebido.
 export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
 
+    // useRouter: hook do Next.js pra navegar por código. Usado no fim do handlerSalvar para voltar à listagem depois de salvar.
     const router = useRouter();
 
+    // useState guarda o usuário que está sendo digitado no formulário.
+    // Valor inicial: usuarioExistente (edição) OU um new Usuario com campos vazios (criação) — o operador || escolhe o primeiro que existir.
+    // No new Usuario(...) a ordem segue o construtor da classe: id, nome, email, status, cpf, senha (id null = ainda não existe no banco).
     const [usuario, setUsuario] = useState<Usuario>(
     usuarioExistente ||
     new Usuario(null, "", "", "ATIVO", "", "")); /*Usuario vem com valores zerados, para receber o que vira do forms*/
 
+    // handlerChange: chamado a cada tecla digitada nos inputs (onChange). Recebe QUAL campo mudou e o novo valor.
+    // Como os dados são uma classe imutável, criamos um NOVO Usuario copiando os valores anteriores e trocando só o campo alterado.
+    // setUsuario(valorAnterior => ...) usa a forma 'função de atualização': garante que estamos partindo do estado mais recente.
     const handlerChange = ( campo: 'nome' | 'email' | 'cpf' | 'senha', valor:string) => {
         setUsuario(valorAnterior => 
             new Usuario(
@@ -26,6 +38,9 @@ export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
         )
     }
 
+    // handlerSalvar: executa ao enviar o formulário (action={handlerSalvar} no <form>, que já entrega um FormData — aqui não usado, pois o estado 'usuario' já tem tudo).
+    // FLUXO: se usuarioExistente -> PUT /usuarios/{id} (atualiza tudo); senão -> POST /usuarios (cria novo).
+    // Se deu 200 mostra alerta; se não, para com return (não chega no router.push). No final volta pra listagem.
     const handlerSalvar = async (formData : FormData) => {
 
         if(usuarioExistente){
@@ -55,6 +70,10 @@ export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
 
     }
 
+    // JSX do formulário.
+    // action={handlerSalvar} no <form>: forma moderna do React 19/Next de tratar submit — chama a função ao enviar, sem onSubmit + preventDefault.
+    // Inputs 'controlados': value={usuario.campo} + onChange={handlerChange} (o React é a fonte da verdade do valor digitado).
+    // required = validação nativa do navegador (impede envio com campo vazio). type="password" esconde a senha digitada.
     return(
 
         <form action={handlerSalvar} className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">

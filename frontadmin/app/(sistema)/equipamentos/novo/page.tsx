@@ -1,6 +1,9 @@
 import Link from "next/link";
 import EquipamentoForm from "../components/EquipamentoForm";
 
+{/* <EquipamentoForm/> SEM a prop equipamentoExistente = o form entende que está em modo CRIAÇÃO (começa com campos vazios e, ao salvar, faz POST). */}
+// CadastroEquipamento: tela de CRIAÇÃO (Create). É só uma 'casca' visual (título, Voltar, ícone +). Toda a lógica de formulário/estado/API fica dentro de <EquipamentoForm/>, reaproveitado também na edição.
+// Sem 'use client': não usa hooks nem interatividade própria, então continua sendo Server Component (padrão do Next).
 export default function CadastroEquipamento(){
 
     return(

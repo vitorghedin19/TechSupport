@@ -8,23 +8,30 @@ import { Chamado } from "@/app/types/chamado";
 import axios from "axios";
 
 
+// EditarChamado: tela de EDIÇÃO (Update). Precisa primeiro BUSCAR o registro específico na API antes de mostrar o formulário. "use client" (1ª linha) é obrigatório: usa hooks (useParams, useRouter, useState, useEffect).
 export default function EditarChamado(){
 
+    // useParams: lê o parâmetro dinâmico da URL. Como a pasta se chama [codigo], em /chamados/3/editar o retorno é { codigo: "3" } — sempre STRING, pois URL é texto.
     const parametro = useParams();
 
+    // Number(...) converte "3" (string) em 3 (number), para usar na URL da API e bater com o tipo do id (number | null) da classe.
     const codigo = Number(parametro.codigo);
 
+    // Estado com o registro buscado. Começa null (ainda não carregou). O tipo Chamado|null permite tratar o estado de 'carregando'.
     const [chamado, setChamado] = useState<Chamado|null>(null);
 
 
+    // useRouter: navegação por código (usado para voltar à listagem caso o registro não seja encontrado).
     const router = useRouter();
 
+    // useEffect com [] roda buscarDados() UMA vez, ao abrir a tela — carrega o registro a ser editado.
     useEffect(()=>{
 
         buscarDados();
 
     },[])
 
+    // GET /chamado/{codigo}: busca só esse registro. Se 200, guarda no estado; senão volta para a listagem.
     const buscarDados = async() => {
 
         const valorChamadoBack = await axios.get<Chamado>('http://localhost:8080/chamado/'+codigo)
@@ -36,6 +43,7 @@ export default function EditarChamado(){
 
     }
 
+    // Enquanto o registro não chegou (null), mostra 'Carregando'. Evita renderizar o form vazio e garante que a prop Existente já chegue preenchida.
     if(!chamado) return(<div className="p-8">Carregando Dados ...</div>)
 
     return(
@@ -60,6 +68,7 @@ export default function EditarChamado(){
                 </div>
 
                 <div className="w-full">
+                    {/* Passa o registro carregado via prop chamadoExistente: isso coloca o form em modo EDIÇÃO (usa PUT e vem pré-preenchido). */}
                     <ChamadoForm chamadoExistente={chamado}/>
                 </div>
 

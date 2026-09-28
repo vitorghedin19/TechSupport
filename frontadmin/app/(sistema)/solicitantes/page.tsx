@@ -1,18 +1,23 @@
 "use client"
 
+// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
 import { Solicitante } from "@/app/types/solicitante";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Solicitantes: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
 export default function Solicitantes(){
 
+    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
     const [solicitantes,setSolicitantes] = useState<Solicitante[]>([])
 
+    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
     useEffect(() => {
         carregarDados();
     }, []);
 
+    // GET na API: busca todos os registros e guarda no estado. O <Solicitante[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
     const carregarDados = async ()=>{
 
         try{
@@ -25,9 +30,10 @@ export default function Solicitantes(){
     }
     }
 
+    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
     const handlerDeletarSolicitante = async(solicitante:Solicitante) => {
 
-        var dadosRetorno = await axios.delete('http://localhost:8080/solicitantes/' +solicitante.id+'/excluir')
+        var dadosRetorno = await axios.delete('http://localhost:8080/solicitante/' +solicitante.id+'/excluir')
 
         if(dadosRetorno.status==200){
             alert("Solicitante excluído com sucesso");
@@ -41,6 +47,7 @@ export default function Solicitantes(){
 
     }
 
+    // Toggle de status: ATIVO <-> BLOQUEADO. Monta {statusSolicitante: ...} (formato do DTO do backend) e envia via PATCH (atualização parcial). Depois recarrega a lista.
     const handleAlterarStatusSolicitante = async(solicitante:Solicitante) =>{
 
 
@@ -89,6 +96,7 @@ export default function Solicitantes(){
                 
                 <tbody className="divide-y divide-slate-800">
 
+                    {/* '.map()' transforma cada solicitante em uma <tr>. key={solicitante.id} é obrigatório em listas do React. */}
                     {solicitantes.map((solicitante)=>(
 
                     <tr key={solicitante.id} className="hover:bg-slate-800/40 transition-colors">
@@ -99,11 +107,13 @@ export default function Solicitantes(){
                         <td className="px-4 py-3 text-slate-100">{solicitante.status}</td>
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
+                                {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/solicitantes/[codigo]/editar. */}
                                 <Link href={`/solicitantes/${solicitante.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
                                 <button onClick={()=> handlerDeletarSolicitante(solicitante)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
                                 <button onClick = {()=> handleAlterarStatusSolicitante(solicitante)}
-                                       className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${solicitante.status ==='BLOQUEADO'
-                                         ?'text-red-400 border-red-500/40 bg-red-500/10 hover:bg-red-500/20' 
+                                       className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${
+                                        solicitante.status ==='BLOQUEADO'?'text-orange-400 orange-orange-500/40 bg-orange-500/10 hover:bg-orange-500/20': 
+                                        solicitante.status ==='EXCLUIDO'?'text-red-400 border-red-500/40 bg-red-500/10 hover:bg-red-500/20' 
                                          :'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20' }`
                                          }>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-3.5 h-3.5">
@@ -115,6 +125,7 @@ export default function Solicitantes(){
                     </tr>
                     ))}
 
+                    {/* Estado vazio: linha de aviso quando a lista está vazia. colSpan={6} = as 6 colunas da tabela. */}
                     { solicitantes.length === 0 && 
                     (
 

@@ -1,18 +1,25 @@
 'use client'
+// 'use client' (linha acima): necessário — o componente usa hooks (useState, useRouter) e onChange.
+// EquipamentoFormProps define a prop opcional equipamentoExistente (veja app/types).
 import { Equipamento, EquipamentoFormProps } from "@/app/types/equipamento";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// EquipamentoForm: formulário ÚNICO para CRIAR e EDITAR. Com equipamentoExistente preenchido = EDIÇÃO (PUT); sem = CRIAÇÃO (POST). Mesmo padrão do UsuarioForm.
 export default function EquipamentoForm({equipamentoExistente}:EquipamentoFormProps){
 
+    // useRouter: usado no fim do handlerSalvar para voltar à listagem após salvar.
     const router = useRouter();
 
+    // Estado do formulário. Valor inicial: equipamentoExistente (edição) OU new Equipamento(...) vazio (criação); o || escolhe o primeiro que existir.
+    // Ordem do construtor: id, equipamento, tipo, status (id null = ainda não existe no banco).
     const [equipamento, setEquipamento] = useState<Equipamento>(
     equipamentoExistente ||
     new Equipamento(null, "", "", "ATIVO"));
 
+    // Chamado a cada tecla (onChange): cria um NOVO Equipamento copiando os valores anteriores e trocando só o campo alterado (a classe é tratada como imutável).
     const handlerChange = ( campo: 'equipamento' | 'tipo' | 'status', valor:string) => {
         setEquipamento(valorAnterior => 
             new Equipamento(
@@ -24,6 +31,7 @@ export default function EquipamentoForm({equipamentoExistente}:EquipamentoFormPr
         )
     }
 
+    // Executa ao enviar o form (action={handlerSalvar}). equipamentoExistente ? PUT /equipamento/{id} (atualiza) : POST /equipamento (cria). Status 200 = alerta de sucesso; caso contrário, return interrompe antes do router.push.
     const handlerSalvar = async (formData : FormData) => {
 
         if(equipamentoExistente){
@@ -53,6 +61,7 @@ export default function EquipamentoForm({equipamentoExistente}:EquipamentoFormPr
 
     }
 
+    // JSX do formulário. Inputs 'controlados': value vem do estado, onChange atualiza o estado. required = validação nativa do navegador.
     return(
 
         <form action={handlerSalvar} className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">

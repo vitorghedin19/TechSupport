@@ -1,6 +1,14 @@
 import Link from "next/link";
 import UsuarioForm from "../components/UsuarioForm";
 
+// CadastroUsuario: tela de CRIAÇÃO (o "C" de Create). Repare que essa página é só uma
+// "casca" visual (título, botão voltar, ícone "+") — ela NÃO tem lógica de formulário
+// nenhuma. Toda a parte de inputs, estado e chamada à API fica dentro de <UsuarioForm/>,
+// componente reaproveitado tanto aqui (criar) quanto na tela de editar (mais abaixo).
+//
+// Note que esse arquivo NÃO tem "use client": ele não usa hooks nem interatividade
+// própria, só renderiza JSX estático + o componente de formulário — por isso pode
+// continuar sendo um Server Component por padrão.
 export default function CadastroUsuario(){
 
     return(
@@ -24,6 +32,9 @@ export default function CadastroUsuario(){
                     </div>
                 </div>
 
+                {/* <UsuarioForm/> SEM a prop usuarioExistente = form entende que está em
+                    modo CRIAÇÃO (o construtor da classe Usuario é chamado com campos
+                    vazios lá dentro do form). */}
                 <div className="w-full">
                     <UsuarioForm/>
                 </div>

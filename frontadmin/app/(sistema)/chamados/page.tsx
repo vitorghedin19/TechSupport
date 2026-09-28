@@ -1,19 +1,24 @@
 "use client"
 
 
+// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
 import { Chamado } from "@/app/types/chamado";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Chamados: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
 export default function Chamados(){
 
+    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
     const [chamados,setChamados] = useState<Chamado[]>([])
 
+    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
     useEffect(() => {
         carregarDados();
     }, []);
 
+    // GET na API: busca todos os registros e guarda no estado. O <Chamado[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
     const carregarDados = async ()=>{
 
         try{
@@ -26,6 +31,7 @@ export default function Chamados(){
     }
     }
 
+    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
     const handlerDeletarChamado = async(chamado:Chamado) => {
 
         var dadosRetorno = await axios.delete('http://localhost:8080/chamado/' +chamado.id+'/excluir')
@@ -42,6 +48,8 @@ export default function Chamados(){
 
     }
 
+    // DIFERENTE dos outros módulos: aqui o status NÃO é binário. O botão CICLA por mais estados: ABERTO -> EM_ANDAMENTO -> RESOLVIDO -> FECHADO -> ABERTO (o else final cobre ATRASADO/EXCLUIDO, voltando pra ABERTO).
+    // Monta {statusChamado: ...} e envia via PATCH. ATENÇÃO (regra de negócio): esse botão fecha o chamado sem exigir solução no histórico — a regra 'só fecha com solução registrada' ainda não está implementada.
     const handleAlterarStatusChamado = async(chamado:Chamado) =>{
 
         var novoStatusValor = "";
@@ -97,6 +105,7 @@ export default function Chamados(){
                 </thead>
 
                 <tbody className="divide-y divide-slate-800">
+                    {/* '.map()' transforma cada chamado em uma <tr>. key={chamado.id} é obrigatório em listas do React. */}
                     {chamados.map((chamado)=>(
 
                     <tr key={chamado.id} className="hover:bg-slate-800/40 transition-colors">
@@ -107,16 +116,16 @@ export default function Chamados(){
                         <td className="px-4 py-3 text-slate-100">{chamado.status}</td>
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
+                                {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/chamados/[codigo]/editar. */}
                                 <Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
                                 <button onClick={()=> handlerDeletarChamado(chamado)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
+                                {/* A cor do botão depende do status (ternários encadeados = if / else if / else): verde=RESOLVIDO, cinza=FECHADO, roxo=EM_ANDAMENTO, vermelho=EXCLUIDO, azul=demais (ABERTO). */}
                                 <button onClick = {()=> handleAlterarStatusChamado(chamado)}
                                        className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${
-                                         chamado.status ==='RESOLVIDO'
-                                         ?'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20'
-                                         :chamado.status ==='FECHADO'
-                                         ?'text-slate-400 border-slate-500/40 bg-slate-500/10 hover:bg-slate-500/20'
-                                         :chamado.status ==='EM_ANDAMENTO'
-                                         ?'text-purple-400 border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20'
+                                         chamado.status ==='RESOLVIDO'?'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20'
+                                         :chamado.status ==='FECHADO'?'text-slate-400 border-slate-500/40 bg-slate-500/10 hover:bg-slate-500/20'
+                                         :chamado.status ==='EM_ANDAMENTO'?'text-purple-400 border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20'
+                                         :chamado.status ==='EXCLUIDO'?'text-red-400 border-red-500/40 bg-red-500/10 hover:bg-red-500/20'
                                          :'text-blue-400 border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20' }`
                                          }>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-3.5 h-3.5">
@@ -128,6 +137,7 @@ export default function Chamados(){
                     </tr>
                     ))}
 
+                    {/* Estado vazio: linha de aviso quando não há chamados. colSpan={6} = as 6 colunas. */}
                     { chamados.length ===0 && 
                     (
 

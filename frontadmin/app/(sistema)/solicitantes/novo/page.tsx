@@ -2,6 +2,9 @@ import Link from "next/link";
 import SolicitanteForm from "../components/SolicitanteForm";
 
 
+{/* <SolicitanteForm/> SEM a prop solicitanteExistente = o form entende que está em modo CRIAÇÃO (começa com campos vazios e, ao salvar, faz POST). */}
+// CadastroSolicitante: tela de CRIAÇÃO (Create). É só uma 'casca' visual (título, Voltar, ícone +). Toda a lógica de formulário/estado/API fica dentro de <SolicitanteForm/>, reaproveitado também na edição.
+// Sem 'use client': não usa hooks nem interatividade própria, então continua sendo Server Component (padrão do Next).
 export default function CadastroSolicitante(){
 
     return(

@@ -1,18 +1,23 @@
 "use client"
 
+// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
 import { Equipamento } from "@/app/types/equipamento";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Equipamentos: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
 export default function Equipamentos(){
     
+    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
     const [equipamentos,setEquipamentos] = useState<Equipamento[]>([])
 
+    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
     useEffect(() => {
         carregarDados();
     }, []);
 
+    // GET na API: busca todos os registros e guarda no estado. O <Equipamento[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
     const carregarDados = async ()=>{
 
         try{
@@ -25,6 +30,7 @@ export default function Equipamentos(){
     }
     }
 
+    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
     const handlerDeletarEquipamento = async(equipamento:Equipamento) => {
 
         var dadosRetorno = await axios.delete('http://localhost:8080/equipamento/' +equipamento.id+'/excluir')
@@ -41,6 +47,7 @@ export default function Equipamentos(){
 
     }
 
+    // Toggle de status (2 estados): ATIVO <-> EXCLUIDO. Monta {statusEquipamento: ...}, o formato que o DTO do backend espera, e manda via PATCH (atualização parcial: só o status). Depois recarrega.
     const handleAlterarStatusEquipamento = async(equipamento:Equipamento) =>{
 
 
@@ -86,6 +93,7 @@ export default function Equipamentos(){
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
+                   {/* '.map()' transforma cada item do array em uma <tr>. key={equipamento.id} é obrigatório em listas: ajuda o React a identificar cada linha entre renderizações. */}
                    {equipamentos.map((equipamento)=>(
 
                     <tr key={equipamento.id} className="hover:bg-slate-800/40 transition-colors">
@@ -95,6 +103,7 @@ export default function Equipamentos(){
                         <td className="px-4 py-3 text-slate-100">{equipamento.status}</td>
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
+                                {/* Link DINÂMICO: o id entra na URL via template string (crase) e leva para app/(sistema)/equipamentos/[codigo]/editar, onde [codigo] recebe esse valor. */}
                                 <Link href={`/equipamentos/${equipamento.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
                                 <button onClick={()=> handlerDeletarEquipamento(equipamento)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
                                 <button onClick = {()=> handleAlterarStatusEquipamento(equipamento)}
@@ -111,6 +120,7 @@ export default function Equipamentos(){
                     </tr>
                     ))}
 
+                    {/* Estado vazio: se não houver registros, mostra uma linha de aviso. colSpan={5} = ocupa as 5 colunas da tabela. */}
                     { equipamentos.length ===0 && 
                     (
 

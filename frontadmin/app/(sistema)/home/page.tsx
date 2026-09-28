@@ -1,3 +1,6 @@
+// Home: página de boas-vindas do sistema, acessível em /home.
+// É a página mais simples do projeto: não tem "use client", não tem hooks, não busca
+// nada de API — só renderiza um texto fixo. Serve como tela inicial depois do login.
 export default function Home(){
 
     return(

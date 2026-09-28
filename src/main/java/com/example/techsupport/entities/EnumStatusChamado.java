@@ -1,11 +1,5 @@
-// ==========================================================================
-// ARQUIVO: EnumStatusChamado.java
-// Enum com os estados possíveis de um Chamado (ciclo de vida do chamado).
-// ATRASADO é o status do diferencial de SLA (chamado crítico aberto há mais de 24h).
-// ATENÇÃO: como o campo "status" em Chamado não tem @Enumerated, o banco guarda o NÚMERO da posição
-// (ABERTO=0, EM_ANDAMENTO=1, RESOLVIDO=2, FECHADO=3, ATRASADO=4, EXCLUIDO=5). Por isso NÃO se deve reordenar
-// nem inserir valores no meio depois que já existem dados no banco. No JSON da API, aparece o nome ("ABERTO").
-// ==========================================================================
+// Estados possiveis de um Chamado. ATRASADO e o status do SLA (chamado critico ha mais de 24h).
+// EXCLUIDO e usado pelo endpoint de excluir chamado (exclusao logica, nao apaga do banco).
 package com.example.techsupport.entities;
 
 public enum EnumStatusChamado {
