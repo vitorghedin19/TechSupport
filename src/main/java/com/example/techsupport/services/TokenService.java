@@ -27,18 +27,37 @@ public class TokenService {
     @Value("${spring.emissor}")
     private String emissor;
 
-    // Cria o token pro usuario que fez login (subject = email dele).
+    // Gera o token JWT para o usuário que acabou de fazer login com sucesso.
+    // "subject" = identificador do usuário dentro do token (aqui, o email — é o que o
+    // AuthController deve estar passando ao chamar este metodo após validar a senha).
     public String gerarToken(String subject){
 
         try {
 
+            // Algorithm.HMAC256(secret): define o algoritmo de assinatura (HMAC-SHA256),
+            // usando a chave secreta (a mesma que verificarToken() usa depois pra conferir
+            // — por isso precisa ser IDÊNTICA nos dois métodos, senão o token gerado aqui
+            // nunca vai passar na validação).
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
+            // Monta o token usando "builder pattern" (métodos encadeados, cada um define uma
+            // parte do JWT):
+            //   .withIssuer(emissor)      -> quem emitiu o token (claim "iss")
+            //   .withSubject(subject)     -> a quem o token pertence (claim "sub") — aqui, o email
+            //   .withExpiresAt(...)       -> quando o token vence (claim "exp"), calculado no
+            //                                metodo getDataExpiracao() logo abaixo
+            //   .sign(algorithm)          -> assina o token com a chave e devolve a string final,
+            //                                no formato padrão JWT (três partes separadas por ".")
             String token = com.auth0.jwt.JWT.create().withIssuer(emissor).withSubject(subject).withExpiresAt(getDataExpiracao()).sign(algorithm);
 
             return token;
 
         }catch (RuntimeException e){
+            // Se algo der errado ao montar/assinar o token (ex: erro na configuração do
+            // algoritmo), relança como RuntimeException — nesse caso específico é meio
+            // redundante (captura RuntimeException só pra devolver outra RuntimeException
+            // embrulhando a mesma), mas serve pra "centralizar" o ponto de erro caso algum
+            // dia queiram adicionar log ou tratamento aqui.
             throw new RuntimeException(e);
         }
     }

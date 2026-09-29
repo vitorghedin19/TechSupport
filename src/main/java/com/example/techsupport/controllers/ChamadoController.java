@@ -1,8 +1,11 @@
 // Controller do CRUD de Chamado (a entidade central do sistema).
 //
-// FLUXO GERAL (vale pros 4 controllers de cadastro): o front chama uma URL -> o metodo aqui recebe
-// a requisicao -> chama o ChamadoRepository -> o repository conversa com o Postgres -> o resultado
-// volta como JSON pro front.
+// FLUXO GERAL (vale pros 4 controllers de cadastro):
+// -> o front chama uma URL
+// -> o metodo aqui recebe a requisicao
+// -> chama o ChamadoRepository
+// -> o repository conversa com o Postgres
+// -> o resultado volta como JSON pro front.
 //
 // ENDPOINTS (prefixo /chamado):
 //   GET    /chamado              lista todos

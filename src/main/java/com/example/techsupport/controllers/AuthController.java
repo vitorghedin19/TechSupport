@@ -34,7 +34,9 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(description = "Método de login", summary = "Autenticação de usuários")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){ //O <?> é um wildcard genérico do Java — significa "esse ResponseEntity
+                                                                            // pode conter qualquer tipo de corpo, e o Java não vai exigir
+                                                                            // que você declare qual é".
 
         // Existe usuario com esse email e essa senha? (nao confere se o usuario esta bloqueado)
         if (usuarioRepository.existsUsuarioByEmailAndSenha(loginRequest.email(), loginRequest.senha())){

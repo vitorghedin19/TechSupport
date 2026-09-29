@@ -11,10 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity // -> marca a classe como uma tabela do banco.
+@Data // -> gera getters, setters, toString, equals e hashCode.
+@NoArgsConstructor // -> gera construtor vazio (Hibernate exige isso pra criar objetos do banco).
+@AllArgsConstructor // -> gera construtor com todos os campos.
 public class Chamado {
 
     @Id
