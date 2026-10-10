@@ -1,7 +1,8 @@
 // Controller do CRUD de Equipamento. Mesmo padrao do ChamadoController.
 package com.example.techsupport.presentation;
 
-import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
+import com.example.techsupport.application.DTOs.*;
+import com.example.techsupport.application.services.EquipamentoService;
 import com.example.techsupport.domain.entities.EnumStatusEquipamento;
 import com.example.techsupport.domain.entities.Equipamento;
 import com.example.techsupport.domain.repository.EquipamentoRepository;

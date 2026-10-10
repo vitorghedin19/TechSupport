@@ -10,6 +10,8 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
+import com.example.techsupport.application.DTOs.CriarAdminRequest;
+import com.example.techsupport.application.DTOs.CriarAdminResponse;
 import com.example.techsupport.application.DTOs.UsuarioResponse;
 import com.example.techsupport.application.services.UsuarioService;
 import com.example.techsupport.domain.entities.EnumStatusUsuario;
@@ -52,6 +54,21 @@ public class UsuarioController {
             return ResponseEntity.ok(usuarioBanco);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
+
+        try {
+
+            CriarAdminResponse respostaSalvar = usuarioService.criarAdmin(criarAdminRequest);
+
+            return ResponseEntity.ok(respostaSalvar);
+
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     // POST /usuarios -> cadastra um novo.
