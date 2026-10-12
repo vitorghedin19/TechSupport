@@ -1,10 +1,15 @@
 package com.example.techsupport.application.services;
 
-import com.example.techsupport.application.DTOs.ComunicacaoRequest;
 import com.example.techsupport.application.DTOs.ComunicacaoResponse;
+import com.example.techsupport.application.DTOs.CriarComunicacaoRequest;
+import com.example.techsupport.application.DTOs.CriarComunicacaoResponse;
 import com.example.techsupport.domain.entities.Comunicacao;
+import com.example.techsupport.domain.repository.ComunicacaoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ComunicacaoService {
@@ -12,17 +17,29 @@ public class ComunicacaoService {
     @Value("${spring.secret}")
     private String secret;
 
-    public ComunicacaoResponse criarComunicacao(ComunicacaoRequest comunicacaoRequest) {
+    @Autowired
+    private ComunicacaoRepository comunicacaoRepository;
 
-        if (!ComunicacaoRequest.secretKey().equals(secret)){
-            return new ComunicacaoResponse(0L, "Comunicação Salva com sucesso!");
+    public List<ComunicacaoResponse> listarTodasComunicacoesTable(){
+
+        return comunicacaoRepository.findAll()
+                .stream()
+                .map(ComunicacaoResponse::new)
+                .toList();
+
+    }
+
+    public CriarComunicacaoResponse criarComunicacao(CriarComunicacaoRequest comunicacaoRequest) {
+
+        if (!comunicacaoRequest.secretKey().equals(secret)){
+            return new CriarComunicacaoResponse(0L, "Comunicação Salva com sucesso!");
         }
 
         Comunicacao comunicacaoSalvar = new Comunicacao (comunicacaoRequest);
 
         comunicacaoRepository.save(comunicacaoSalvar);
 
-        return new ComunicacaoResponse(comunicacaoSalvar.getId(), "Comunicação salvo com sucesso!");
+        return new CriarComunicacaoResponse(comunicacaoSalvar.getId(), "Comunicação salvo com sucesso!");
 
     }
 

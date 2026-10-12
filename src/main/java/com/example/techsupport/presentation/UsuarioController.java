@@ -57,6 +57,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/admin")
+    @Operation(summary = "Método de criação de usuários ADMS!", description = "Método reponsável em efetuar a criação de novos usuários ADMS!")
     public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
 
         try {

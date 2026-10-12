@@ -1,6 +1,6 @@
 package com.example.techsupport.domain.entities;
 
-import com.example.techsupport.application.DTOs.ComunicacaoRequest;
+import com.example.techsupport.application.DTOs.CriarComunicacaoRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,11 +21,9 @@ public class Comunicacao {
         private Long id;
         private String nome;
 
-        public Comunicacao(ComunicacaoRequest comunicacaoRequest) {
+        public Comunicacao(CriarComunicacaoRequest comunicacaoRequest) {
 
             this.setNome(comunicacaoRequest.nome());
 
         }
     }
-
-}

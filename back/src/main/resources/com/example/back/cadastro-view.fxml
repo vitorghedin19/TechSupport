@@ -3,9 +3,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!-- cadastro-view.fxml: desenha a TELA (os componentes visuais), sem nenhuma lógica. É o "HTML" do
+     JavaFX. O fx:controller liga este arquivo à classe CadastroController - é lá que fica o código
+     que roda quando o usuário clica em algo aqui. -->
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.CadastroController">
    <children>
+      <!-- onAction="#salvarUsuario": ao clicar, chama o metodo salvarUsuario() do controller. -->
       <Button layoutX="507.0" layoutY="355.0" mnemonicParsing="false" onAction="#salvarUsuario" prefHeight="25.0" prefWidth="71.0" text="Salvar" />
+      <!-- fx:id="txtEmail": é o "nome" que liga este campo à variável txtEmail no controller. -->
       <TextField fx:id="txtEmail" layoutX="233.0" layoutY="129.0" />
       <TextField fx:id="txtSenha" layoutX="233.0" layoutY="167.0" />
       <Label layoutX="185.0" layoutY="133.0" text="Email:" />
@@ -14,6 +19,7 @@
       <Label layoutX="187.0" layoutY="72.0" text="Nome:" />
       <TextField fx:id="txtNome" layoutX="233.0" layoutY="68.0" />
       <TextField fx:id="txtCpf" layoutX="233.0" layoutY="96.0" />
+      <!-- onAction="#voltar": ao clicar, chama o metodo voltar() do controller (troca pra tela de menu). -->
       <Button layoutX="26.0" layoutY="355.0" mnemonicParsing="false" onAction="#voltar" text="Voltar" />
    </children>
 </AnchorPane>
