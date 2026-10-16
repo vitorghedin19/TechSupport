@@ -9,12 +9,9 @@
 //  6) devolve 200 OK pro front (sem corpo) ou 404 se o id nao existir
 package com.example.techsupport.presentation;
 
-import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
-import com.example.techsupport.application.DTOs.CriarAdminRequest;
-import com.example.techsupport.application.DTOs.CriarAdminResponse;
-import com.example.techsupport.application.DTOs.UsuarioResponse;
+import com.example.techsupport.application.DTOs.*;
 import com.example.techsupport.application.services.UsuarioService;
-import com.example.techsupport.domain.entities.EnumStatusUsuario;
+import com.example.techsupport.application.DTOs.EnumStatusUsuario;
 import com.example.techsupport.domain.entities.Usuario;
 import com.example.techsupport.domain.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,8 +45,8 @@ public class UsuarioController {
     // GET /usuarios/{id} -> busca um pelo id.
     @GetMapping("/{id}")
     @Operation(summary = "Método de buscar usuário por ID!", description = "Método responsável em efetuar busca de usuários existentes por ID")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id){
+        UsuarioResponse usuarioBanco = usuarioService.buscarPorId(id);
         if (usuarioBanco != null) {
             return ResponseEntity.ok(usuarioBanco);
         }
@@ -76,10 +73,17 @@ public class UsuarioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Método de criação de usuários!", description = "Método reponsável em efetuar a criação de novos usuários!")
-    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario){
+    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario){
 
-        var usuarioBanco = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(usuarioBanco);
+        try {
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario);
+            return ResponseEntity.ok(usuarioBanco);
+
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+
     }
 
     // PATCH /usuarios/{id}/status -> troca so o status (ex.: bloquear um usuario).
@@ -87,12 +91,7 @@ public class UsuarioController {
     @Operation(summary = "Método de atualizar o status de usuários!", description = "Método reponsável em atualizar os status de usuários!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if (usuarioBanco != null) {
-            usuarioBanco.setStatus(statusRequest.statusUsuario());
-            usuarioRepository.save(usuarioBanco);
-            return ResponseEntity.ok().build();
-        }
+        var atualizarUsuario = usuarioService.salvarUsuario(UsuarioRequest.status());
 
         return ResponseEntity.notFound().build();
 

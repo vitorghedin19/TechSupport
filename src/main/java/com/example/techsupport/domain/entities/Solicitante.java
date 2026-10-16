@@ -1,6 +1,7 @@
 // Entidade Solicitante -> tabela "solicitante". E quem abre o chamado (cliente/funcionario).
 package com.example.techsupport.domain.entities;
 
+import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

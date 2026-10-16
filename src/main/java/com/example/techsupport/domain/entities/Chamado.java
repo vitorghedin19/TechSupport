@@ -2,6 +2,7 @@
 // Chamado e a entidade principal do sistema: titulo, descricao, prioridade e status.
 package com.example.techsupport.domain.entities;
 
+import com.example.techsupport.application.DTOs.EnumStatusChamado;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

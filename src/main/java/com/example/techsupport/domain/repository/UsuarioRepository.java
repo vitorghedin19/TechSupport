@@ -2,7 +2,7 @@
 // o Spring le o nome do metodo e monta o SQL sozinho.
 package com.example.techsupport.domain.repository;
 
-import com.example.techsupport.domain.entities.EnumStatusUsuario;
+import com.example.techsupport.application.DTOs.EnumStatusUsuario;
 import com.example.techsupport.domain.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

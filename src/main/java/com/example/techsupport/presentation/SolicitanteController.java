@@ -2,7 +2,7 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
-import com.example.techsupport.domain.entities.EnumStatusSolicitante;
+import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
 import com.example.techsupport.domain.entities.Solicitante;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import io.swagger.v3.oas.annotations.Operation;

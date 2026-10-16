@@ -53,4 +53,25 @@ public class UsuarioService {
         return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuário salvo com sucesso!");
 
     }
+
+    public UsuarioResponse salvarUsuario(UsuarioRequest usuario) {
+
+        Usuario usuarioBranco = new Usuario(usuario);
+
+        usuarioRepository.save(usuarioBranco);
+
+        return new UsuarioResponse(usuarioBranco);
+
+    }
+
+    public UsuarioResponse buscarPorId(Long id) {
+
+        var usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null){
+
+        }
+
+        return new UsuarioResponse(usuario);
+
+    }
 }

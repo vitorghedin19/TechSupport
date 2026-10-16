@@ -1,6 +1,7 @@
 // Entidade Equipamento -> tabela "equipamento".
 package com.example.techsupport.domain.entities;
 
+import com.example.techsupport.application.DTOs.EnumStatusEquipamento;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

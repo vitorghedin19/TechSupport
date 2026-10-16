@@ -1,6 +1,5 @@
 package com.example.techsupport.application.DTOs;
 
-import com.example.techsupport.domain.entities.EnumStatusSolicitante;
 import com.example.techsupport.domain.entities.Solicitante;
 
 public record SolicitanteResponse (Long id, String nome, String email, String setor, EnumStatusSolicitante statusSolicitante) {

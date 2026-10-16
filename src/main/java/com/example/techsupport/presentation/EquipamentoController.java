@@ -2,8 +2,7 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.*;
-import com.example.techsupport.application.services.EquipamentoService;
-import com.example.techsupport.domain.entities.EnumStatusEquipamento;
+import com.example.techsupport.application.DTOs.EnumStatusEquipamento;
 import com.example.techsupport.domain.entities.Equipamento;
 import com.example.techsupport.domain.repository.EquipamentoRepository;
 import io.swagger.v3.oas.annotations.Operation;

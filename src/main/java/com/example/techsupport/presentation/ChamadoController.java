@@ -21,6 +21,7 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
+import com.example.techsupport.application.DTOs.EnumStatusChamado;
 import com.example.techsupport.domain.entities.*;
 import com.example.techsupport.domain.repository.ChamadoRepository;
 import io.swagger.v3.oas.annotations.Operation;

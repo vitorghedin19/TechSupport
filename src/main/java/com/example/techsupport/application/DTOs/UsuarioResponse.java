@@ -1,6 +1,5 @@
 package com.example.techsupport.application.DTOs;
 
-import com.example.techsupport.domain.entities.EnumStatusUsuario;
 import com.example.techsupport.domain.entities.Usuario;
 
 public record UsuarioResponse (Long id, String nome, String cpf, String email, EnumStatusUsuario statusUsuario) {
@@ -9,7 +8,7 @@ public record UsuarioResponse (Long id, String nome, String cpf, String email, E
             this(
                     usuarioEntidade.getId(),
                     usuarioEntidade.getNome(),
-                    usuarioEntidade.getCpf(),
+                    usuarioEntidade.getCpf().toString(),
                     usuarioEntidade.getEmail(),
                     usuarioEntidade.getStatus()
             );
