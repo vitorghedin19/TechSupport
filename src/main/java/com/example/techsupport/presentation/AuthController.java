@@ -6,8 +6,7 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.LoginRequest;
-import com.example.techsupport.application.DTOs.LoginResponse;
-import com.example.techsupport.domain.repository.UsuarioRepository;
+import com.example.techsupport.application.services.UsuarioService;
 import com.example.techsupport.application.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,23 +29,18 @@ public class AuthController {
     private TokenService tokenService;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @PostMapping("/login")
     @Operation(description = "Método de login", summary = "Autenticação de usuários")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){ //O <?> é um wildcard genérico do Java — significa "esse ResponseEntity
                                                                             // pode conter qualquer tipo de corpo, e o Java não vai exigir
                                                                             // que você declare qual é".
+        var resultadoAutenticacaoRetornoToken = usuarioService.validarUsuarioAutenticadoRetornaToken(loginRequest);
 
-        // Existe usuario com esse email e essa senha? (nao confere se o usuario esta bloqueado)
-        if (usuarioRepository.existsUsuarioByEmailAndSenha(loginRequest.email(), loginRequest.senha())){
-
-            var token = tokenService.gerarToken(loginRequest.email());
-
-            return ResponseEntity.ok(new LoginResponse(token));
+        if (resultadoAutenticacaoRetornoToken != null){
+            return ResponseEntity.ok(resultadoAutenticacaoRetornoToken);
         }
-        // Email/senha errados: responde 401.
-        return ResponseEntity.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
+        return ResponseEntity.badRequest().body("Usuário ou senha Inválido!");
     }
-
 }

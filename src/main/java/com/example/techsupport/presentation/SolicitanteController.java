@@ -1,8 +1,8 @@
 // Controller do CRUD de Solicitante. Mesmo padrao do ChamadoController.
 package com.example.techsupport.presentation;
 
-import com.example.techsupport.application.DTOs.AtualizarStatusRequest;
-import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
+import com.example.techsupport.application.DTOs.*;
+import com.example.techsupport.application.services.SolicitanteService;
 import com.example.techsupport.domain.entities.Solicitante;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,24 +12,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/solicitante")
 @Tag(name = "Solicitante", description = "Endpoints responsáveis pelo gerenciamento de solicitantes do sistema TechSupport, permitindo consultar e cadastrar solicitantes.")
 public class SolicitanteController {
 
     @Autowired
-    private SolicitanteRepository solicitanteRepository;
+    private SolicitanteService solicitanteService;
 
     // GET /solicitante -> lista todos.
     @GetMapping
     @Operation(summary = "Método de consulta de listas de solicitantes!", description = "Método reponsável em efetuar a consulta de todos os solicitantes sem filtro!")
-    public ResponseEntity<?> listarTodos(){return ResponseEntity.ok(solicitanteRepository.findAll());}
+    public ResponseEntity<List<SolicitanteResponse>> listarTodos() {
+        return ResponseEntity.ok(solicitanteService.listarTodosSolicitantesTable());
+    }
 
     // GET /solicitante/{id} -> busca um pelo id.
     @GetMapping("/{id}")
     @Operation(summary = "Método de buscar solicitante por ID!", description = "Método responsável em efetuar busca de solicitantes existentes por ID")
-    public ResponseEntity<Solicitante> buscarPorId(@PathVariable Long id){
-        Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
+    public ResponseEntity<SolicitanteResponse> buscarPorId(@PathVariable Long id) {
+        SolicitanteResponse solicitanteBanco = solicitanteService.buscarPorId(id);
         if (solicitanteBanco != null) {
             return ResponseEntity.ok(solicitanteBanco);
         }
@@ -40,49 +44,41 @@ public class SolicitanteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Método de criação de solicitantes!", description = "Método reponsável em efetuar a criação de novos solicitantes!")
-    public ResponseEntity<Solicitante> criar(@RequestBody Solicitante solicitante){
+    public ResponseEntity<?> criar(@RequestBody SolicitanteRequest solicitante) {
 
-        var solicitanteBanco = solicitanteRepository.save(solicitante);
-        return ResponseEntity.ok(solicitanteBanco);
+        try {
+            SolicitanteResponse solicitanteBanco = solicitanteService.salvarSolicitante(solicitante, 0L);
+            return ResponseEntity.ok(solicitanteBanco);
 
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // PATCH /solicitante/{id}/status -> troca so o status.
     @PatchMapping("/{id}/status") //serve para atualizar um dado apenas
     @Operation(summary = "Método de atualizar o status de solicitantes!", description = "Método reponsável em atualizar os status de solicitantes!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest) {
 
-        Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
-        if (solicitanteBanco != null) {
-            solicitanteBanco.setStatus(statusRequest.statusSolicitante());
-            solicitanteRepository.save(solicitanteBanco);
+        var atualizarSolicitante = solicitanteService.atualizarStatus(statusRequest.statusSolicitante(), id);
+
+        if (atualizarSolicitante) {
             return ResponseEntity.ok().build();
         }
-
         return ResponseEntity.notFound().build();
-
     }
 
     // PUT /solicitante/{id} -> atualiza nome, setor, email e status.
     @PutMapping("/{id}")
     @Operation(summary = "Método de atualizar solicitantes!", description = "Método reponsável em atualizar os dados de solicitantes!")
-    public ResponseEntity<Solicitante> atualizar(@PathVariable Long id, @RequestBody Solicitante solicitante){
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody SolicitanteRequest solicitante) {
 
         try {
-            Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
-            if ( solicitanteBanco != null ){
-                solicitanteBanco.setNome(solicitante.getNome());
-                solicitanteBanco.setSetor(solicitante.getSetor());
-                solicitanteBanco.setEmail(solicitante.getEmail());
-                solicitanteBanco.setStatus(solicitante.getStatus());
-                solicitanteRepository.save(solicitanteBanco);
-                return ResponseEntity.ok().build();
-            }
+            SolicitanteResponse solicitanteBanco = solicitanteService.salvarSolicitante(solicitante, id);
+            return ResponseEntity.ok(solicitanteBanco);
 
-            return ResponseEntity.notFound().build();
-
-        } catch (RuntimeException e){
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -90,14 +86,12 @@ public class SolicitanteController {
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Método de excluir solicitantes!", description = "Método reponsável em excluir cadastros de solicitantes!")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
-        if (solicitanteBanco != null) {
-            solicitanteBanco.setStatus(EnumStatusSolicitante.EXCLUIDO);
-            solicitanteRepository.save(solicitanteBanco);
+
+        var atualizarSolicitante = solicitanteService.atualizarStatus(EnumStatusSolicitante.EXCLUIDO,id);
+
+        if (atualizarSolicitante){
             return ResponseEntity.ok().build();
         }
-
-        return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
     }
-
 }

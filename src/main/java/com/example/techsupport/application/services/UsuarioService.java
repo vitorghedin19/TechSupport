@@ -3,6 +3,7 @@ package com.example.techsupport.application.services;
 import com.example.techsupport.application.DTOs.*;
 import com.example.techsupport.domain.entities.Usuario;
 import com.example.techsupport.domain.repository.UsuarioRepository;
+import com.example.techsupport.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,24 +55,47 @@ public class UsuarioService {
 
     }
 
-    public UsuarioResponse salvarUsuario(UsuarioRequest usuario) {
+    public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
-        Usuario usuarioBranco = new Usuario(usuario);
+        //Novo Usuario
+        if (id == 0L){
+            Usuario usuarioBanco = new Usuario(usuario);
+            usuarioRepository.save(usuarioBanco);
 
-        usuarioRepository.save(usuarioBranco);
-
-        return new UsuarioResponse(usuarioBranco);
-
+            return new UsuarioResponse(usuarioBanco);
+        } else {
+            //Usuario existente
+            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+            if ( usuarioBanco != null ){
+                usuarioBanco.setCpf(new CPF(usuario.cpf()));
+                usuarioBanco.setEmail(usuario.email());
+                usuarioBanco.setNome(usuario.nome());
+                usuarioBanco.setSenha(usuario.senha());
+                usuarioRepository.save(usuarioBanco);
+                return new UsuarioResponse(usuarioBanco);
+            }
+            return null;
+        }
     }
 
     public UsuarioResponse buscarPorId(Long id) {
 
         var usuario = usuarioRepository.findById(id).orElse(null);
         if (usuario == null){
-
+            return null;
         }
-
         return new UsuarioResponse(usuario);
-
     }
+
+    public boolean atualizarStatus(EnumStatusUsuario statusUsuario, Long id){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if (usuarioBanco!=null){
+            usuarioBanco.setStatus(statusUsuario);
+            usuarioRepository.save(usuarioBanco);
+            return true;
+        }
+        return false;
+    }
+
 }

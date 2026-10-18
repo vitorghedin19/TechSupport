@@ -2,6 +2,8 @@
 package com.example.techsupport.domain.entities;
 
 import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
+import com.example.techsupport.application.DTOs.SolicitanteRequest;
+import com.example.techsupport.domain.valueobject.CPF;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,4 +25,11 @@ public class Solicitante {
     private String email;
     private String setor;
     private EnumStatusSolicitante status = EnumStatusSolicitante.ATIVO;
+
+    public Solicitante (SolicitanteRequest solicitante){
+        this.setNome(solicitante.nome());
+        this.setEmail(solicitante.email());
+        this.setSetor(solicitante.setor());
+    }
+
 }

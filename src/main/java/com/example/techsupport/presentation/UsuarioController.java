@@ -13,7 +13,6 @@ import com.example.techsupport.application.DTOs.*;
 import com.example.techsupport.application.services.UsuarioService;
 import com.example.techsupport.application.DTOs.EnumStatusUsuario;
 import com.example.techsupport.domain.entities.Usuario;
-import com.example.techsupport.domain.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +27,13 @@ import java.util.List;
 @Tag(name = "Usuários", description = "Endpoints responsáveis pelo gerenciamento de usuários do sistema TechSupport, permitindo consultar e cadastrar usuários.")
 public class UsuarioController {
 
-    @Autowired //injeção de dependencia
-    private UsuarioRepository usuarioRepository;
-
     @Autowired
     private UsuarioService usuarioService;
 
     // GET /usuarios -> lista todos (inclusive a senha de cada um, ja que a entidade inteira e devolvida).
     @GetMapping
     @Operation(summary = "Método de consulta de listas de usuários!", description = "Método reponsável em efetuar a consulta de todos os usuários sem filtro!")
-    public ResponseEntity<List<UsuarioResponse>> listarTodos(){
+    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
 
         return ResponseEntity.ok(usuarioService.listarTodosUsuarioTable());
     }
@@ -45,7 +41,7 @@ public class UsuarioController {
     // GET /usuarios/{id} -> busca um pelo id.
     @GetMapping("/{id}")
     @Operation(summary = "Método de buscar usuário por ID!", description = "Método responsável em efetuar busca de usuários existentes por ID")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
         UsuarioResponse usuarioBanco = usuarioService.buscarPorId(id);
         if (usuarioBanco != null) {
             return ResponseEntity.ok(usuarioBanco);
@@ -55,7 +51,7 @@ public class UsuarioController {
 
     @PostMapping("/admin")
     @Operation(summary = "Método de criação de usuários ADMS!", description = "Método reponsável em efetuar a criação de novos usuários ADMS!")
-    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
+    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest) {
 
         try {
 
@@ -63,7 +59,7 @@ public class UsuarioController {
 
             return ResponseEntity.ok(respostaSalvar);
 
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -73,51 +69,40 @@ public class UsuarioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Método de criação de usuários!", description = "Método reponsável em efetuar a criação de novos usuários!")
-    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario){
+    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario) {
 
         try {
-            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario);
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario, 0L);
             return ResponseEntity.ok(usuarioBanco);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-
     }
 
     // PATCH /usuarios/{id}/status -> troca so o status (ex.: bloquear um usuario).
     @PatchMapping("/{id}/status") //serve para atualizar um dado apenas
     @Operation(summary = "Método de atualizar o status de usuários!", description = "Método reponsável em atualizar os status de usuários!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest) {
 
-        var atualizarUsuario = usuarioService.salvarUsuario(UsuarioRequest.status());
+        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.statusUsuario(), id);
 
+        if (atualizarUsuario) {
+            return ResponseEntity.ok().build();
+        }
         return ResponseEntity.notFound().build();
-
     }
 
     // PUT /usuarios/{id} -> atualiza status, cpf, email, nome e senha (veja o fluxo no topo do arquivo).
     @PutMapping("/{id}")
     @Operation(summary = "Método de atualizar usuários!", description = "Método reponsável em atualizar os dados de usuários!")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuario) {
 
         try {
-            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-            if ( usuarioBanco != null ){
-                usuarioBanco.setStatus(usuario.getStatus());
-                usuarioBanco.setCpf(usuario.getCpf());
-                usuarioBanco.setEmail(usuario.getEmail());
-                usuarioBanco.setNome(usuario.getNome());
-                usuarioBanco.setSenha(usuario.getSenha());
-                usuarioRepository.save(usuarioBanco);
-                return ResponseEntity.ok().build();
-            }
-
-            return ResponseEntity.notFound().build();
-
-        } catch (RuntimeException e){
-            throw new RuntimeException(e);
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario, id);
+            return ResponseEntity.ok(usuarioBanco);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -125,13 +110,12 @@ public class UsuarioController {
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Método de excluir usuários!", description = "Método reponsável em excluir cadastros de usuários!")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if (usuarioBanco != null) {
-            usuarioBanco.setStatus(EnumStatusUsuario.EXCLUIDO);
-            usuarioRepository.save(usuarioBanco);
+
+        var atualizarUsuario = usuarioService.atualizarStatus(EnumStatusUsuario.EXCLUIDO, id);
+
+        if (atualizarUsuario) {
             return ResponseEntity.ok().build();
         }
-
         return ResponseEntity.notFound().build();
     }
 }

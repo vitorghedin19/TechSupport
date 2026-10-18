@@ -2,7 +2,9 @@
 // Chamado e a entidade principal do sistema: titulo, descricao, prioridade e status.
 package com.example.techsupport.domain.entities;
 
+import com.example.techsupport.application.DTOs.ChamadoRequest;
 import com.example.techsupport.application.DTOs.EnumStatusChamado;
+import com.example.techsupport.application.DTOs.SolicitanteRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,4 +26,11 @@ public class Chamado {
     private String descricao;
     private String prioridade;
     private EnumStatusChamado status = EnumStatusChamado.ABERTO;
+
+    public Chamado (ChamadoRequest chamado){
+        this.setTitulo(chamado.titulo());
+        this.setDescricao(chamado.descricao());
+        this.setPrioridade(chamado.prioridade());
+    }
+
 }
