@@ -1,24 +1,3 @@
-// Controller do CRUD de Chamado (a entidade central do sistema)
-//
-// FLUXO GERAL (vale pros 4 controllers de cadastro):
-// -> o front chama uma URL
-// -> o metodo aqui recebe a requisicao
-// -> chama o ChamadoService
-// -> o service fala com o ChamadoRepository
-// -> o repository conversa com o Postgres
-// -> o resultado volta como JSON pro front.
-//
-// ENDPOINTS (prefixo /chamado):
-//   GET    /chamado              lista todos
-//   GET    /chamado/{id}         busca um pelo id
-//   POST   /chamado              cadastra um novo
-//   PUT    /chamado/{id}         atualiza titulo, descricao e prioridade
-//   PATCH  /chamado/{id}/status  atualiza so o status
-//   DELETE /chamado/{id}/excluir marca o chamado como EXCLUIDO (nao apaga do banco)
-//
-// AVISO PRA PROVA: continua sem existir endpoint que feche o chamado exigindo uma solucao
-// registrada - so existe excluir(), que so troca o status. A regra "so fecha com solucao no
-// historico" ainda precisa ser criada.
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.*;
@@ -40,14 +19,12 @@ public class ChamadoController {
     @Autowired
     private ChamadoService chamadoService;
 
-    // GET /chamado -> lista todos os chamados do banco.
     @GetMapping
     @Operation(summary = "Método de consulta de listas de chamados!", description = "Método reponsável em efetuar a consulta de todos os chamados sem filtro!")
     public ResponseEntity<List<ChamadoResponse>> listarTodos(){
         return ResponseEntity.ok(chamadoService.listarTodosChamadosTable());
     }
 
-    // GET /chamado/{id} -> busca um chamado pelo id da URL.
     @GetMapping("/{id}")
     @Operation(summary = "Método de buscar chamados por ID!", description = "Método responsável em efetuar busca de chamados existentes por ID")
     public ResponseEntity<ChamadoResponse> buscarPorId(@PathVariable Long id){
@@ -58,7 +35,6 @@ public class ChamadoController {
         return ResponseEntity.notFound().build();
     }
 
-    // POST /chamado -> cadastra um novo.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Método de criação de chamados!", description = "Método reponsável em efetuar a criação de novos chamados!")
@@ -73,10 +49,9 @@ public class ChamadoController {
         }
     }
 
-    // PATCH /chamado/{id}/status -> troca so o status do chamado (nao mexe no resto dos dados).
-    @PatchMapping("/{id}/status") //serve para atualizar um dado apenas
+    @PatchMapping("/{id}/status")
     @Operation(summary = "Método de atualizar o status de chamados!", description = "Método reponsável em atualizar os status de chamados!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusChamadoRequest statusRequest){
 
         var atualizarChamado = chamadoService.atualizarStatus(statusRequest.statusChamado(), id);
 
@@ -86,7 +61,6 @@ public class ChamadoController {
         return ResponseEntity.notFound().build();
     }
 
-    // PUT /chamado/{id} -> troca titulo, descricao e prioridade pelos dados enviados.
     @PutMapping("/{id}")
     @Operation(summary = "Método de atualizar chamados!", description = "Método reponsável em atualizar os dados de chamados!")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody ChamadoRequest chamado){
@@ -100,7 +74,6 @@ public class ChamadoController {
         }
     }
 
-    // DELETE /chamado/{id}/excluir -> nao apaga a linha do banco, so muda o status pra EXCLUIDO.
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Método de excluir chamados!", description = "Método reponsável em excluir chamados!")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
@@ -111,6 +84,25 @@ public class ChamadoController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // NOVO: unico caminho pra marcar um chamado como RESOLVIDO. Exige solucao no corpo
+    // da requisicao - a validacao de verdade acontece la na entidade, aqui so pega
+    // a excecao e devolve 400 com a mensagem pro front.
+    @PatchMapping("/{id}/resolver")
+    @Operation(summary = "Método de resolver chamados!", description = "Método responsável em marcar um chamado como resolvido, exigindo o registro da solução adotada.")
+    public ResponseEntity<?> resolver(@PathVariable Long id, @RequestBody ResolverChamadoRequest request){
+
+        try {
+            ChamadoResponse chamadoResolvido = chamadoService.resolver(id, request.solucao());
+            if (chamadoResolvido != null) {
+                return ResponseEntity.ok(chamadoResolvido);
+            }
+            return ResponseEntity.notFound().build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

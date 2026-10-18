@@ -83,7 +83,7 @@ public class UsuarioController {
     // PATCH /usuarios/{id}/status -> troca so o status (ex.: bloquear um usuario).
     @PatchMapping("/{id}/status") //serve para atualizar um dado apenas
     @Operation(summary = "Método de atualizar o status de usuários!", description = "Método reponsável em atualizar os status de usuários!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest) {
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest) {
 
         var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.statusUsuario(), id);
 

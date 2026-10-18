@@ -66,4 +66,19 @@ public class ChamadoService {
         }
         return false;
     }
+
+    // NOVO: segue o mesmo padrao dos outros metodos (busca -> aplica a regra -> salva).
+    // Quem decide se pode resolver ou nao e o metodo resolver() la na entidade -
+    // aqui so orquestra a busca e o save.
+    public ChamadoResponse resolver(Long id, String solucaoAdotada) {
+
+        Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
+        if (chamadoBanco == null) {
+            return null;
+        }
+
+        chamadoBanco.resolver(solucaoAdotada); // pode lancar IllegalArgumentException
+        chamadoRepository.save(chamadoBanco);
+        return new ChamadoResponse(chamadoBanco);
+    }
 }
