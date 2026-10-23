@@ -7,6 +7,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.techsupport.application.DTOs.LoginRequest;
+import com.example.techsupport.application.DTOs.UsuarioLogado;
+import com.example.techsupport.domain.entities.Token;
+import com.example.techsupport.domain.repository.TokenRepository;
+import com.example.techsupport.domain.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,55 +33,48 @@ public class TokenService {
     @Value("${spring.emissor}")
     private String emissor;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private TokenRepository tokenRepository;
+
     // Gera o token JWT para o usuário que acabou de fazer login com sucesso.
     // "subject" = identificador do usuário dentro do token (aqui, o email — é o que o
     // AuthController deve estar passando ao chamar este metodo após validar a senha).
-    public String gerarToken(String subject){
+    public String gerarToken(LoginRequest loginRequestDto){
 
-        try {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            // Algorithm.HMAC256(secret): define o algoritmo de assinatura (HMAC-SHA256),
-            // usando a chave secreta (a mesma que verificarToken() usa depois pra conferir
-            // — por isso precisa ser IDÊNTICA nos dois métodos, senão o token gerado aqui
-            // nunca vai passar na validação).
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+        var usuario = usuarioRepository.findAll().stream().filter(u-> u.getEmail().equals(loginRequestDto.email())).findFirst().orElse(null);
 
-            // Monta o token usando "builder pattern" (métodos encadeados, cada um define uma
-            // parte do JWT):
-            //   .withIssuer(emissor)      -> quem emitiu o token (claim "iss")
-            //   .withSubject(subject)     -> a quem o token pertence (claim "sub") — aqui, o email
-            //   .withExpiresAt(...)       -> quando o token vence (claim "exp"), calculado no
-            //                                metodo getDataExpiracao() logo abaixo
-            //   .sign(algorithm)          -> assina o token com a chave e devolve a string final,
-            //                                no formato padrão JWT (três partes separadas por ".")
             String token = com.auth0.jwt.JWT.create()
                     .withIssuer(emissor)
-                    .withSubject(subject)
+                    .withSubject(loginRequestDto.email())
                     .withExpiresAt(getDataExpiracao())
                     .sign(algorithm);
 
-            return token;
+            tokenRepository.save(new Token(token, usuario));
 
-        }catch (RuntimeException e){
-            // Se algo der errado ao montar/assinar o token (ex: erro na configuração do
-            // algoritmo), relança como RuntimeException — nesse caso específico é meio
-            // redundante (captura RuntimeException só pra devolver outra RuntimeException
-            // embrulhando a mesma), mas serve pra "centralizar" o ponto de erro caso algum
-            // dia queiram adicionar log ou tratamento aqui.
-            throw new RuntimeException(e);
-        }
+            return token;
     }
 
     // Confere se um token e valido. Se estiver tudo certo devolve o token decodificado; se algo
     // estiver errado (assinatura, emissor ou prazo), lanca excecao.
-    public DecodedJWT verificarToken(String token) throws JWTVerificationException {
+    public UsuarioLogado verificarToken(String token) throws JWTVerificationException {
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
         JWTVerifier verificador = JWT.require(algorithm).withIssuer(emissor).build();
 
-        return verificador.verify(token);
 
+        verificador.verify(token);
+
+        var tokenBanco = tokenRepository.findByToken(token).orElse(null);
+        if (tokenBanco == null){
+            throw new IllegalArgumentException("Token Inválido!");
+        }
+        return new UsuarioLogado(tokenBanco.getUsuario());
     }
 
     // Calcula quando o token vai vencer: agora + os minutos configurados no properties.

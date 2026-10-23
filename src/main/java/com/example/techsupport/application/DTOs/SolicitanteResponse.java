@@ -9,7 +9,7 @@ public record SolicitanteResponse (Long id, String nome, String email, String se
                 solicitanteEntidade.getId(),
                 solicitanteEntidade.getNome(),
                 solicitanteEntidade.getEmail(),
-                solicitanteEntidade.getSetor(),
+                solicitanteEntidade.getSetor().toString(),
                 solicitanteEntidade.getStatus()
         );
     }

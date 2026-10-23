@@ -6,6 +6,7 @@ import com.example.techsupport.domain.repository.UsuarioRepository;
 import com.example.techsupport.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class UsuarioService {
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
         if (usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
-            var token = tokenService.gerarToken(request.email());
+            var token = tokenService.gerarToken(request);
             return new LoginResponse(token);
         }
         return null;
@@ -55,8 +56,13 @@ public class UsuarioService {
 
     }
 
+    public UsuarioLogado getUsuarioLogado(){
+        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
+        var usuarioLogado = getUsuarioLogado();
         //Novo Usuario
         if (id == 0L){
             Usuario usuarioBanco = new Usuario(usuario);
@@ -71,6 +77,7 @@ public class UsuarioService {
                 usuarioBanco.setEmail(usuario.email());
                 usuarioBanco.setNome(usuario.nome());
                 usuarioBanco.setSenha(usuario.senha());
+                usuarioBanco.setEmpresa_id(usuarioLogado.empresa_id());
                 usuarioRepository.save(usuarioBanco);
                 return new UsuarioResponse(usuarioBanco);
             }
