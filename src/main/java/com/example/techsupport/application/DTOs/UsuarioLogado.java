@@ -11,9 +11,8 @@ public record UsuarioLogado(Long id, String email, CPF cpf,  Long empresa_id,
                 usuario.getId(),
                 usuario.getEmail(),
                 usuario.getCpf(),
-                1L,
+                usuario.getEmpresa()!=null? usuario.getEmpresa().getId(): null,
                 usuario.getAuthorities()
                 );
     }
-
 }

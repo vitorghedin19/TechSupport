@@ -5,4 +5,7 @@ import com.example.techsupport.domain.entities.Solicitante;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SolicitanteRepository extends JpaRepository<Solicitante, Long> {
+
+    boolean existsSolicitanteByEmailAndSenha(String email, String senha);
+
 }

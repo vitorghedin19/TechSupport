@@ -19,4 +19,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
         // Busca todos os usuarios com status DIFERENTE do informado. Ninguem chama esse metodo ainda.
         Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario statusUsuario);
 
+        List<Usuario> getUsuariosByEmpresa_Id(long empresa);
+
 }

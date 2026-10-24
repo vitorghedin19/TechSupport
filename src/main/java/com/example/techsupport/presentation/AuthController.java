@@ -6,6 +6,7 @@
 package com.example.techsupport.presentation;
 
 import com.example.techsupport.application.DTOs.LoginRequest;
+import com.example.techsupport.application.services.SolicitanteService;
 import com.example.techsupport.application.services.UsuarioService;
 import com.example.techsupport.application.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,15 +32,21 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private SolicitanteService solicitanteService;
+
     @PostMapping("/login")
     @Operation(description = "Método de login", summary = "Autenticação de usuários")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){ //O <?> é um wildcard genérico do Java — significa "esse ResponseEntity
-                                                                            // pode conter qualquer tipo de corpo, e o Java não vai exigir
-                                                                            // que você declare qual é".
-        var resultadoAutenticacaoRetornoToken = usuarioService.validarUsuarioAutenticadoRetornaToken(loginRequest);
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
 
-        if (resultadoAutenticacaoRetornoToken != null){
-            return ResponseEntity.ok(resultadoAutenticacaoRetornoToken);
+        var resultado = usuarioService.validarUsuarioAutenticadoRetornaToken(loginRequest);
+
+        if (resultado == null) { // NOVO: se não achou como Usuario, tenta como Solicitante
+            resultado = solicitanteService.validarSolicitanteAutenticadoRetornaToken(loginRequest);
+        }
+
+        if (resultado != null){
+            return ResponseEntity.ok(resultado);
         }
         return ResponseEntity.badRequest().body("Usuário ou senha Inválido!");
     }

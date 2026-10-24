@@ -26,16 +26,24 @@ public class UsuarioService {
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
         if (usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
-            var token = tokenService.gerarToken(request);
+            var token = tokenService.gerarTokenUsuario(request); // antes era "gerarToken"
             return new LoginResponse(token);
         }
         return null;
     }
 
-
     public List<UsuarioResponse> listarTodosUsuarioTable(){
 
-        return usuarioRepository.findAll()
+        var usuarioLogado = getUsuarioLogado();
+
+        if (usuarioLogado.empresa_id() == null){
+            return usuarioRepository.findAll()
+                    .stream()
+                    .map(UsuarioResponse::new)
+                    .toList();
+        }
+
+        return usuarioRepository.getUsuariosByEmpresa_Id(usuarioLogado.empresa_id())
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
@@ -77,7 +85,6 @@ public class UsuarioService {
                 usuarioBanco.setEmail(usuario.email());
                 usuarioBanco.setNome(usuario.nome());
                 usuarioBanco.setSenha(usuario.senha());
-                usuarioBanco.setEmpresa_id(usuarioLogado.empresa_id());
                 usuarioRepository.save(usuarioBanco);
                 return new UsuarioResponse(usuarioBanco);
             }

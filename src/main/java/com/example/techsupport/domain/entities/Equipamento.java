@@ -4,13 +4,13 @@ package com.example.techsupport.domain.entities;
 import com.example.techsupport.application.DTOs.EnumStatusEquipamento;
 import com.example.techsupport.application.DTOs.EquipamentoRequest;
 import com.example.techsupport.application.DTOs.SolicitanteRequest;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data

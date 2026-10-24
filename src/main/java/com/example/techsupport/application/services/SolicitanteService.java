@@ -1,8 +1,6 @@
 package com.example.techsupport.application.services;
 
-import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
-import com.example.techsupport.application.DTOs.SolicitanteRequest;
-import com.example.techsupport.application.DTOs.SolicitanteResponse;
+import com.example.techsupport.application.DTOs.*;
 import com.example.techsupport.domain.entities.Solicitante;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,9 @@ public class SolicitanteService {
 
     @Autowired
     private SolicitanteRepository solicitanteRepository;
+
+    @Autowired
+    private TokenService tokenService;
 
 
     public List<SolicitanteResponse> listarTodosSolicitantesTable(){
@@ -66,4 +67,15 @@ public class SolicitanteService {
         }
         return false;
     }
+
+
+    public LoginResponse validarSolicitanteAutenticadoRetornaToken (LoginRequest request) { // NOVO
+
+        if (solicitanteRepository.existsSolicitanteByEmailAndSenha(request.email(), request.senha())){
+            var token = tokenService.gerarTokenSolicitante(request);
+            return new LoginResponse(token);
+        }
+        return null;
+    }
+
 }

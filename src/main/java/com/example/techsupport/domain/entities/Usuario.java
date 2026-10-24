@@ -33,7 +33,10 @@ public class Usuario implements UserDetails {
     private String senha;
     private String email;
     private String role = "ROLE_USER";
-    private Long empresa_id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
+    private Empresa empresa;
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 
     public void setEmail(String email) {

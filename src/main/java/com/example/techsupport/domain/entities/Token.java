@@ -26,10 +26,20 @@ public class Token {
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
     private Usuario usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "solicitante_id", referencedColumnName = "id")
+    private Solicitante solicitante;
+
     public Token(String token, Usuario usuario) {
 
         this.setToken(token);
         this.setUsuario(usuario);
+        this.setDataCadastro(LocalDateTime.now());
+    }
+
+    public Token(String token, Solicitante solicitante) {
+        this.setToken(token);
+        this.setSolicitante(solicitante);
         this.setDataCadastro(LocalDateTime.now());
     }
 }
