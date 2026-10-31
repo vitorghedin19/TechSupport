@@ -1,45 +1,43 @@
 "use client"
 
-// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
+import { atualizarStatusSolicitante, buscarListaSolicitantes, deletarSolicitante } from "@/app/services/solicitanteService";
 import { Solicitante } from "@/app/types/solicitante";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Solicitantes: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
+
 export default function Solicitantes(){
 
-    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
     const [solicitantes,setSolicitantes] = useState<Solicitante[]>([])
 
-    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
+
     useEffect(() => {
         carregarDados();
     }, []);
 
-    // GET na API: busca todos os registros e guarda no estado. O <Solicitante[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
+  
     const carregarDados = async ()=>{
 
         try{
-        const dados = await axios.get<Solicitante[]>("http://localhost:8080/solicitante")
+        const dados = await buscarListaSolicitantes();
 
-        setSolicitantes (dados.data);
+        setSolicitantes (dados);
     
     } catch (error){
         alert("Erro ao carregar dados!")
     }
     }
 
-    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
+ 
     const handlerDeletarSolicitante = async(solicitante:Solicitante) => {
 
-        var dadosRetorno = await axios.delete('http://localhost:8080/solicitante/' +solicitante.id+'/excluir')
+        var dadosRetorno = await deletarSolicitante(solicitante.id || 0);
 
-        if(dadosRetorno.status==200){
+        if(dadosRetorno==200){
             alert("Solicitante excluído com sucesso");
             
         }else{
-            alert("dadosRetorno.data");
+            alert("Erro ao excluir solicitante");
             return;
         }
 
@@ -47,27 +45,10 @@ export default function Solicitantes(){
 
     }
 
-    // Toggle de status: ATIVO <-> BLOQUEADO. Monta {statusSolicitante: ...} (formato do DTO do backend) e envia via PATCH (atualização parcial). Depois recarrega a lista.
+
     const handleAlterarStatusSolicitante = async(solicitante:Solicitante) =>{
 
-
-        var novoStatus = {};
-        if(solicitante.status ==="ATIVO"){
-            novoStatus = {statusSolicitante:"BLOQUEADO"}
-        }else{
-            novoStatus = {statusSolicitante:"ATIVO"}
-        }
-
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/solicitante/'+solicitante.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atualizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
-            return;
-        }
+        await atualizarStatusSolicitante(solicitante);
 
         carregarDados();
 

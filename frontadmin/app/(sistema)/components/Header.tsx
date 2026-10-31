@@ -1,8 +1,13 @@
-// Header: barra de topo do sistema interno. Componente puramente visual (sem hooks,
-// sem estado, sem "use client" porque não precisa de interatividade própria) — sempre
-// retorna o mesmo JSX. Aparece em toda página dentro de (sistema), porque é renderizado
-// pelo SistemaLayout (app/(sistema)/layout.tsx), que envolve todas as rotas do grupo.
+'use client'
+
+import { logout } from "@/app/redux/slices/authSlice";
+import { store } from "@/app/redux/store";
+import { useDispatch } from "react-redux";
+
 export default function Header(){
+
+    const usuario = store.getState().auth.usuario;
+    const dispatch = useDispatch();
 
     return(
         <header className="bg-slate-900 border-b border-slate-800">
@@ -15,10 +20,9 @@ export default function Header(){
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 20.25a7.5 7.5 0 0 1 15 0" />
                         </svg>
                     </div>
-                    {/* Nome fixo escrito direto no JSX (ainda não vem do login/backend) */}
-                    <span className="text-slate-100 font-medium"> Usuário Vitor Ghedin </span>
+                    <span className="text-slate-100 font-medium">{usuario?.nome.toLocaleUpperCase() || 'Usuário não identificado'}</span>
                  </div>
-                <button className="text-sm font-medium text-slate-100 bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors px-4 py-2 rounded-md">Sair</button>
+                <button onClick={()=>{dispatch(logout())}} className="text-sm font-medium text-slate-100 bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors px-4 py-2 rounded-md">Sair</button>
             </div>
         </header>
     );

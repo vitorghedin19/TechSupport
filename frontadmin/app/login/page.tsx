@@ -1,45 +1,44 @@
 'use client'
-// "use client": obrigatório aqui porque a página usa interatividade (formulário com
-// ação de login) e o hook useRouter, que só existem no navegador.
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "../types/auth";
+import { login } from "../redux/slices/authSlice";
+import { buscarUsuarioLogado } from "../services/usuarioService";
+import { useDispatch } from "react-redux";
+import Cookies from "js-cookie";
 
 export default function Login(){
 
-    // useRouter: hook do Next.js que dá acesso à navegação programática — ou seja,
-    // permite trocar de página via código (router.push), sem precisar de um <Link>
-    // clicável. Usado aqui pra redirecionar o usuário pra /home depois do login OK.
-    const router = useRouter();
 
-   // handlelogin: função chamada quando o <form> é enviado (veja o `action={handlelogin}`
-   // lá embaixo). Como é passada direto pro `action` de um form, ela recebe um FormData
-   // automaticamente — é assim que se lê o valor dos campos sem precisar de onChange/useState
-   // em cada input, diferente do que é feito nos formulários de Usuário/Equipamento/etc.
+    const router = useRouter();
+    const dispatch = useDispatch();
+
    const handlelogin =async(formData: FormData) => {
     try{
-        debugger; // ponto de parada pra debug no navegador (Devtools) — não afeta produção,
-                  // mas só faz sentido durante desenvolvimento.
-
-        // formData.get("email") retorna o valor do campo <input name="email">.
-        // "?.toString() ?? ''" é uma proteção: se vier null/undefined, vira string vazia
-        // em vez de quebrar o código.
+        debugger; 
         const emailTela = formData.get("email")?.toString() ?? "";
         const senhaTela = formData.get("senha")?.toString() ?? "";
 
-        // Chama a API de autenticação passando email/senha, esperando de volta um
-        // objeto no formato LoginResponse (que tem só o campo "token").
+      
         var loginResposta = await axios.post<LoginResponse>("http://localhost:8080/auth/login", {email:emailTela, senha:senhaTela});
 
        if( loginResposta.status == 200){
-             router.push("/home") // login OK: navega pra tela inicial do sistema
+        Cookies.set('token',loginResposta.data.token,{secure: true, expires: 7});
+        var usuarioLogado = await buscarUsuarioLogado();
+
+        dispatch(login(
+        {
+            token : loginResposta.data.token, 
+            usuario: {...usuarioLogado}
+        }
+        ));
+
+             router.push("/home") 
        }else{alert ("Login ou senha inválido!")}
    
     } catch (error) {
-        // Se a API responder com erro (ex: 401 Unauthorized), o axios lança uma exception
-        // automaticamente — por isso o tratamento de "login errado" cai aqui no catch,
-        // não no else acima (que praticamente nunca é alcançado na prática).
+   
         alert ("Login ou senha inválido!")
     }
    }
@@ -55,9 +54,6 @@ export default function Login(){
                 </h1>
             </div>
 
-           {/* action={handlelogin}: forma "moderna" do React de lidar com formulários —
-               em vez de onSubmit + preventDefault manual, o próprio form chama a função
-               passando os dados já prontos em FormData quando o botão type="submit" é clicado. */}
            <form action={handlelogin} className="flex flex-col gap-5">
 
                 <div className="flex flex-col gap-1.5">

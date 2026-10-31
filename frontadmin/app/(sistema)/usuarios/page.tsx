@@ -1,57 +1,43 @@
 "use client"
-// "use client": obrigatório porque esse componente usa hooks (useState/useEffect) e
-// interatividade (onClick) — coisas que só existem no navegador, não durante a
-// renderização feita no servidor pelo Next.js.
 
+import { atualizarStatusUsuario, buscarListaUsuarios, deletarUsuario } from "@/app/services/usuarioService";
 import { Usuario } from "@/app/types/usuario";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Usuarios: tela de LISTAGEM (o "R" de Read do CRUD). Mostra a tabela com todos os
-// usuários cadastrados e as ações de editar/deletar/alterar status de cada um.
+
 export default function Usuarios(){
 
-    // useState: hook do React que guarda um valor que, quando muda (via setUsuarios),
-    // faz o componente renderizar de novo automaticamente refletindo o novo valor.
-    // Aqui guardamos a LISTA de usuários vinda do banco; começa vazia ([]) até a API responder.
+   
     const [usuarios,setUsuarios] = useState<Usuario[]>([])
 
-    // useEffect: hook que roda um código depois que o componente aparece na tela.
-    // O array [] no final (chamado "array de dependências") significa "rode isso só UMA
-    // VEZ, quando o componente for montado" — é assim que a lista é buscada automaticamente
-    // ao abrir a página, sem precisar de nenhum clique do usuário.
     useEffect(() => {
         carregarDados();
     }, []);
 
-    // Busca a lista completa de usuários na API (GET) e guarda no estado.
+ 
     const carregarDados = async ()=>{
 
         try{
-        // axios.get<Usuario[]>: faz a requisição HTTP e já avisa o TypeScript que a
-        // resposta esperada é um array de Usuario (tipagem, não validação em runtime).
-        const dados = await axios.get<Usuario[]>("http://localhost:8080/usuarios")
+        
+        const dados = await buscarListaUsuarios();
 
-        setUsuarios (dados.data); // dados.data é o corpo (JSON) da resposta; isso atualiza o estado e re-renderiza a tabela.
+        setUsuarios (dados); 
     
     } catch (error){
         alert("Erro ao carregar dados!")
     }
     }
 
-    // Exclusão lógica: chama DELETE na API (que, no backend, só troca o status pra
-    // EXCLUIDO — não apaga a linha do banco de verdade). Depois de excluir, recarrega a
-    // lista pra tela refletir a mudança.
     const handlerDeletarUsuario = async(usuario:Usuario) => {
 
-        var dadosRetorno = await axios.delete('http://localhost:8080/usuarios/' +usuario.id+'/excluir')
+        var dadosRetorno = await deletarUsuario(usuario.id || 0);
 
-        if(dadosRetorno.status==200){
+        if(dadosRetorno==200){
             alert("Usuário excluído com sucesso");
             
         }else{
-            alert("dadosRetorno.data");
+            alert("Erro ao excluir usuário");
             return;
         }
 
@@ -59,31 +45,10 @@ export default function Usuarios(){
 
     }
 
-    // Alterna o status entre ATIVO e BLOQUEADO (toggle simples de 2 estados). Monta um
-    // objeto {statusUsuario: "..."} — formato que o DTO do backend espera receber no PATCH.
     const handleAlterarStatusUsuario = async(usuario:Usuario) =>{
 
-
-        var novoStatus = {};
-        if(usuario.status ==="ATIVO"){
-            novoStatus = {statusUsuario:"BLOQUEADO"}
-        }else{
-            novoStatus = {statusUsuario:"ATIVO"}
-        }
-
-        // PATCH = atualização PARCIAL: muda só o campo status, sem reenviar
-        // nome/cpf/email/senha (diferente do PUT, que manda o objeto inteiro).
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/usuarios/'+usuario.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atualizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
-            return;
-        }
-
+        await atualizarStatusUsuario(usuario);
+        
         carregarDados();
 
     }

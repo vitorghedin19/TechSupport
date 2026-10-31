@@ -1,46 +1,42 @@
 "use client"
 
-
-// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
+import { atualizarStatusChamado, buscarListaChamados, deletarChamado } from "@/app/services/chamadoService";
 import { Chamado } from "@/app/types/chamado";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Chamados: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
+
 export default function Chamados(){
 
-    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
+   
     const [chamados,setChamados] = useState<Chamado[]>([])
 
-    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
     useEffect(() => {
         carregarDados();
     }, []);
 
-    // GET na API: busca todos os registros e guarda no estado. O <Chamado[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
     const carregarDados = async ()=>{
 
         try{
-        const dados = await axios.get<Chamado[]>("http://localhost:8080/chamado")
+        const dados = await buscarListaChamados();
 
-        setChamados (dados.data);
+        setChamados (dados);
     
     } catch (error){
         alert("Erro ao carregar dados!")
     }
     }
 
-    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
+ 
     const handlerDeletarChamado = async(chamado:Chamado) => {
 
-        var dadosRetorno = await axios.delete('http://localhost:8080/chamado/' +chamado.id+'/excluir')
+        var dadosRetorno = await deletarChamado(chamado.id || 0);
 
-        if(dadosRetorno.status==200){
+        if(dadosRetorno==200){
             alert("Chamado excluído com sucesso");
             
         }else{
-            alert("dadosRetorno.data");
+            alert("Erro ao excluir chamado");
             return;
         }
 
@@ -48,36 +44,10 @@ export default function Chamados(){
 
     }
 
-    // DIFERENTE dos outros módulos: aqui o status NÃO é binário. O botão CICLA por mais estados: ABERTO -> EM_ANDAMENTO -> RESOLVIDO -> FECHADO -> ABERTO (o else final cobre ATRASADO/EXCLUIDO, voltando pra ABERTO).
-    // Monta {statusChamado: ...} e envia via PATCH. ATENÇÃO (regra de negócio): esse botão fecha o chamado sem exigir solução no histórico — a regra 'só fecha com solução registrada' ainda não está implementada.
+
     const handleAlterarStatusChamado = async(chamado:Chamado) =>{
 
-        var novoStatusValor = "";
-
-        if(chamado.status === "ABERTO"){
-            novoStatusValor = "EM_ANDAMENTO"
-        } else if(chamado.status === "EM_ANDAMENTO"){
-            novoStatusValor = "RESOLVIDO"
-        } else if(chamado.status === "RESOLVIDO"){
-            novoStatusValor = "FECHADO"
-        } else if(chamado.status === "FECHADO"){
-            novoStatusValor = "ABERTO"
-        } else {
-            novoStatusValor = "ABERTO"
-        }
-
-        var novoStatus = {statusChamado: novoStatusValor};
-
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/chamado/'+chamado.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atualizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
-            return;
-        }
+        await atualizarStatusChamado(chamado);
 
         carregarDados();
 

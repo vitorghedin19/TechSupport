@@ -1,45 +1,44 @@
 "use client"
 
-// "use client" (linha acima): necessário porque a página usa hooks (useState/useEffect) e onClick, que só existem no navegador.
+import { atualizarStatusEquipamento } from "@/app/services/equipamentoService";
+import { buscarListaEquipamentos, deletarEquipamento } from "@/app/services/equipamentoService";
 import { Equipamento } from "@/app/types/equipamento";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Equipamentos: tela de LISTAGEM (Read do CRUD). Mesmo padrão de Usuários: busca a lista na API ao abrir, mostra numa tabela e oferece Editar / Deletar / Alterar status.
 export default function Equipamentos(){
     
-    // useState: guarda a lista vinda do banco (começa vazia). Ao chamar o setter, o React re-renderiza a tabela com os novos dados.
+
     const [equipamentos,setEquipamentos] = useState<Equipamento[]>([])
 
-    // useEffect com [] (array de dependências vazio): roda carregarDados() UMA vez ao montar a página — é o que carrega a lista sozinha.
+   
     useEffect(() => {
         carregarDados();
     }, []);
 
-    // GET na API: busca todos os registros e guarda no estado. O <Equipamento[]> só tipa a resposta pro TypeScript. Erro de rede/servidor cai no catch.
+
     const carregarDados = async ()=>{
 
         try{
-        const dados = await axios.get<Equipamento[]>("http://localhost:8080/equipamento")
+        const dados = await buscarListaEquipamentos();
 
-        setEquipamentos (dados.data);
+        setEquipamentos (dados);
     
     } catch (error){
         alert("Erro ao carregar dados!")
     }
     }
 
-    // Exclusão LÓGICA: DELETE em /excluir; o backend só troca o status para EXCLUIDO (não apaga a linha). Depois recarrega a lista.
+ 
     const handlerDeletarEquipamento = async(equipamento:Equipamento) => {
 
-        var dadosRetorno = await axios.delete('http://localhost:8080/equipamento/' +equipamento.id+'/excluir')
+        var dadosRetorno = await deletarEquipamento(equipamento.id || 0);
 
-        if(dadosRetorno.status==200){
+        if(dadosRetorno==200){
             alert("Equipamento excluído com sucesso");
             
         }else{
-            alert("dadosRetorno.data");
+            alert("Erro ao excluir equipamento");
             return;
         }
 
@@ -50,24 +49,7 @@ export default function Equipamentos(){
     // Toggle de status (2 estados): ATIVO <-> EXCLUIDO. Monta {statusEquipamento: ...}, o formato que o DTO do backend espera, e manda via PATCH (atualização parcial: só o status). Depois recarrega.
     const handleAlterarStatusEquipamento = async(equipamento:Equipamento) =>{
 
-
-        var novoStatus = {};
-        if(equipamento.status ==="ATIVO"){
-            novoStatus = {statusEquipamento:"EXCLUIDO"}
-        }else{
-            novoStatus = {statusEquipamento:"ATIVO"}
-        }
-
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/equipamento/'+equipamento.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atualizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
-            return;
-        }
+        await atualizarStatusEquipamento(equipamento);
 
         carregarDados();
 
