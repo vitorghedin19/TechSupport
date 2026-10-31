@@ -1,12 +1,12 @@
 'use client'
 
-import { useRouter } from "next/router";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { useRouter } from "next/navigation";
 
 
 export default function SistemaLayout({children}){

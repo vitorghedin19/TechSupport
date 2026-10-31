@@ -58,7 +58,6 @@ export default function Usuarios(){
     <div className="min-h-screen bg-slate-950 px-6 py-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de usuários</h1>
-            {/* Link para a rota de criação: app/(sistema)/usuarios/novo/page.tsx */}
             <Link href="/usuarios/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Usuário</Link>
         </div>
 
@@ -77,10 +76,6 @@ export default function Usuarios(){
                 
                 <tbody className="divide-y divide-slate-800">
 
-                    {/* .map() percorre o array "usuarios" e transforma CADA item numa <tr>.
-                        key={usuario.id} é obrigatório no React ao renderizar listas: ajuda
-                        o React a identificar qual linha é qual entre uma renderização e outra
-                        (evita bugs visuais e melhora performance). */}
                     {usuarios.map((usuario)=>(
 
                     <tr key={usuario.id} className="hover:bg-slate-800/40 transition-colors">
@@ -91,14 +86,8 @@ export default function Usuarios(){
                         <td className="px-4 py-3 text-slate-100">{usuario.status}</td>
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
-                                {/* Link DINÂMICO: o id do usuário é injetado na URL via template
-                                    string (crase). Isso navega para
-                                    app/(sistema)/usuarios/[codigo]/editar/page.tsx, onde
-                                    [codigo] recebe exatamente esse valor. */}
                                 <Link href={`/usuarios/${usuario.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
                                 <button onClick={()=> handlerDeletarUsuario(usuario)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
-                                {/* Botão de status: a cor muda dinamicamente de acordo com o
-                                    status atual (verde=ativo, laranja=bloqueado, vermelho=excluído) */}
                                 <button onClick = {()=> handleAlterarStatusUsuario(usuario)}
                                        className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${
                                         usuario.status ==='BLOQUEADO'?'text-orange-400 border-orange-500/40 bg-orange-500/10 hover:bg-orange-500/20': 
@@ -114,9 +103,6 @@ export default function Usuarios(){
                     </tr>
                     ))}
 
-                    {/* Estado vazio: se a lista tiver 0 itens, mostra uma linha única de aviso
-                        em vez da tabela ficar em branco sem explicação. colSpan={6} faz essa
-                        célula ocupar a largura das 6 colunas do cabeçalho, ficando centralizada. */}
                     { usuarios.length ===0 && 
                     (
 

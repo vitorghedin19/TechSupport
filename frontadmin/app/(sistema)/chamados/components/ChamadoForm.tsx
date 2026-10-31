@@ -1,25 +1,19 @@
 'use client'
-// 'use client' (linha acima): necessário — o componente usa hooks (useState, useRouter) e onChange.
-// ChamadoFormProps define a prop opcional chamadoExistente (veja app/types).
+
 import { Chamado, ChamadoFormProps } from "@/app/types/chamado";
-import axios from "axios";
+import { atualizarChamado, salvarChamado } from "@/app/services/chamadoService";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// ChamadoForm: formulário ÚNICO para CRIAR e EDITAR. Com chamadoExistente preenchido = EDIÇÃO (PUT); sem = CRIAÇÃO (POST). Mesmo padrão do UsuarioForm.
 export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
 
-    // useRouter: usado no fim do handlerSalvar para voltar à listagem após salvar.
     const router = useRouter();
 
-    // Estado do formulário. Valor inicial: chamadoExistente (edição) OU new Chamado(...) vazio (criação); o || escolhe o primeiro que existir.
-    // Ordem do construtor: id, titulo, descricao, prioridade, status (id null = ainda não existe no banco).
     const [chamado, setChamado] = useState<Chamado>(
     chamadoExistente ||
     new Chamado(null, "", "", "", "ABERTO"));
 
-    // Chamado a cada tecla (onChange): cria um NOVO Chamado copiando os valores anteriores e trocando só o campo alterado (a classe é tratada como imutável).
     const handlerChange = ( campo: 'titulo' | 'descricao' | 'prioridade' | 'status', valor:string) => {
         setChamado(valorAnterior => 
             new Chamado(
@@ -32,37 +26,34 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
         )
     }
 
-    // Executa ao enviar o form (action={handlerSalvar}). chamadoExistente ? PUT /chamado/{id} (atualiza) : POST /chamado (cria). Status 200 = alerta de sucesso; caso contrário, return interrompe antes do router.push.
     const handlerSalvar = async (formData : FormData) => {
 
         if(chamadoExistente){
 
-             var dadosRetorno = await axios.put<number>('http://localhost:8080/chamado/'+chamado.id,chamado)
+            var dadosRetorno = await atualizarChamado(chamado);
 
-        if(dadosRetorno.status==200){
-            alert("Chamado foi salvo com sucesso");
-            
+            if(dadosRetorno){
+                alert("Chamado foi salvo com sucesso");
+            }else{
+                alert("Erro ao atualizar Chamado!");
+                return;
+            }
+
         }else{
-            alert("dadosRetorno.data");
-            return;
+
+            var dadosRetorno = await salvarChamado(chamado);
+
+            if(dadosRetorno){
+                alert("Chamado foi salvo com sucesso");
+            }else{
+                alert("Erro ao salvar Chamado!");
+                return;
+            }
         }
-
-        }else{
-        var dadosRetorno = await axios.post<number>('http://localhost:8080/chamado',chamado)
-
-        if(dadosRetorno.status==200){
-            alert("Chamado foi salvo com sucesso");
-            
-        }else{
-            alert("dadosRetorno.data");
-            return;
-        }
-    }
         router.push("/chamados");
 
     }
 
-    // JSX do formulário. Inputs 'controlados': value vem do estado, onChange atualiza o estado. required = validação nativa do navegador.
     return(
 
         <form action={handlerSalvar} className="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-xl shadow-black/30 relative overflow-hidden">
