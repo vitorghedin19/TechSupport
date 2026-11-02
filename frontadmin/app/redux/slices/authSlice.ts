@@ -1,5 +1,6 @@
 import { AuthState } from "@/app/types/auth";
 import { Usuario } from "@/app/types/usuario";
+import { Solicitante } from "@/app/types/solicitante";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
@@ -7,7 +8,7 @@ const usuarioRecover = Cookies.get('usuario');
 const tokenRecover = Cookies.get('token');
 
 const initialState: AuthState = {
-    usuario: usuarioRecover ? JSON.parse(usuarioRecover) as Usuario : null,
+    usuario: usuarioRecover ? JSON.parse(usuarioRecover) as Usuario | Solicitante : null,
     token: tokenRecover ?? ""
 }
 
@@ -16,7 +17,7 @@ const authSlice = createSlice({
     name : 'auth',
     initialState,
     reducers:{
-        login:(state, action: PayloadAction<{token:string, usuario:Usuario}>) => {
+        login:(state, action: PayloadAction<{token:string, usuario:Usuario | Solicitante}>) => {
 
             Cookies.set('token', action.payload.token, { secure: true, expires: 7 });
             Cookies.set('usuario', JSON.stringify(action.payload.usuario),{expires: 7});

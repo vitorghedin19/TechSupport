@@ -60,7 +60,7 @@ public class SolicitanteController {
     @Operation(summary = "Método de atualizar o status de solicitantes!", description = "Método reponsável em atualizar os status de solicitantes!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusSolicitanteRequest statusRequest) {
 
-        var atualizarSolicitante = solicitanteService.atualizarStatus(statusRequest.statusSolicitante(), id);
+        var atualizarSolicitante = solicitanteService.atualizarStatus(statusRequest.status(), id);
 
         if (atualizarSolicitante) {
             return ResponseEntity.ok().build();
@@ -94,4 +94,11 @@ public class SolicitanteController {
         }
             return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/buscarsolicitantelogado")
+    @Operation(summary = "Método de buscar solicitante logado!", description = "Método reponsável em buscar o solicitante logado!")
+    public ResponseEntity<SolicitanteResponse> buscarSolicitanteLogado(){
+        return ResponseEntity.ok(solicitanteService.buscarSolicitanteLogado());
+    }
+
 }

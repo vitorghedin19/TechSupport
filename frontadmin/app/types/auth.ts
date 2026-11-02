@@ -1,3 +1,4 @@
+import { Solicitante } from "./solicitante"
 import { Usuario } from "./usuario"
 
 export interface LoginResponse{
@@ -6,6 +7,6 @@ export interface LoginResponse{
 
 
 export interface AuthState {
-    usuario: Usuario | null
+    usuario: Usuario | Solicitante | null
     token : String
 }

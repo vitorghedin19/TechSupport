@@ -2,43 +2,43 @@
 
 import { useRouter } from "next/navigation";
 import { login } from "../redux/slices/authSlice";
+import { loginBack } from "../services/authService";
 import { buscarUsuarioLogado } from "../services/usuarioService";
+import { buscarSolicitanteLogado } from "../services/solicitanteService";
 import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
-import { loginBack } from "../services/authService";
 
 export default function Login(){
-
 
     const router = useRouter();
     const dispatch = useDispatch();
 
    const handlelogin =async(formData: FormData) => {
     try{
-        debugger; 
         const emailTela = formData.get("email")?.toString() ?? "";
         const senhaTela = formData.get("senha")?.toString() ?? "";
 
-      
-        var loginResposta = await loginBack(emailTela, senhaTela)
+        var loginResposta = await loginBack(emailTela, senhaTela);
 
-       if( loginResposta != null){
-        Cookies.set('token',loginResposta.token,{secure: true, expires: 7});
-        var usuarioLogado = await buscarUsuarioLogado();
+        Cookies.set('token', loginResposta.token, {secure: true, expires: 7});
 
-        dispatch(login(
-        {
-            token : loginResposta.token, 
-            usuario: {...usuarioLogado}
+        try{
+            var usuarioLogado = await buscarUsuarioLogado();
+
+            dispatch(login({ token: loginResposta.token, usuario: {...usuarioLogado} }));
+            router.push("/home");
+
+        }catch{
+            var solicitanteLogado = await buscarSolicitanteLogado();
+
+            dispatch(login({ token: loginResposta.token, usuario: {...solicitanteLogado} }));
+            router.push("/chamados");
         }
-        ));
 
-             router.push("/home") 
-       }else{alert ("Login ou senha inválido!")}
-   
-    } catch (error) {
-   
-        alert ("Login ou senha inválido!")
+    } catch (error: any) {
+
+        console.log("Falha no login:", error.config?.url, error.response?.status, error.response?.data);
+        alert("Login ou senha Inválido");
     }
    }
 

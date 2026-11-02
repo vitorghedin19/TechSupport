@@ -4,6 +4,7 @@ import com.example.techsupport.application.DTOs.*;
 import com.example.techsupport.domain.entities.Solicitante;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,12 +48,12 @@ public class SolicitanteService {
             //Solicitante existente
             Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
             if ( solicitanteBanco != null ){
-               solicitanteBanco.setNome(solicitante.nome());
-               solicitanteBanco.setEmail(solicitante.email());
-               solicitanteBanco.setSetor(solicitante.setor());
-               solicitanteRepository.save(solicitanteBanco);
+                solicitanteBanco.setNome(solicitante.nome());
+                solicitanteBanco.setEmail(solicitante.email());
+                solicitanteBanco.setSetor(solicitante.setor());
+                solicitanteRepository.save(solicitanteBanco);
                 return new SolicitanteResponse(solicitanteBanco);
-           }
+            }
         }
         return null;
     }
@@ -76,6 +77,22 @@ public class SolicitanteService {
             return new LoginResponse(token);
         }
         return null;
+    }
+
+    public SolicitanteLogado getSolicitanteLogado(){
+        return (SolicitanteLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public SolicitanteResponse buscarSolicitanteLogado() {
+
+        try {
+
+            var solicitanteLogado = getSolicitanteLogado();
+            return solicitanteRepository.findById(solicitanteLogado.id()).stream().map(SolicitanteResponse::new).findFirst().orElse(null);
+
+        }catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar solicitante logado");
+        }
     }
 
 }

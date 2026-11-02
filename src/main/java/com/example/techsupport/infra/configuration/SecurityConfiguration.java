@@ -30,6 +30,13 @@ public class SecurityConfiguration {
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+
+                        .requestMatchers("/usuarios/buscarusuariologado")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        .requestMatchers("/solicitante/buscarsolicitantelogado")
+                        .hasRole("SOLICITANTE")
+
                         .requestMatchers("/usuarios/**")
                         .hasRole("ADMIN")
 

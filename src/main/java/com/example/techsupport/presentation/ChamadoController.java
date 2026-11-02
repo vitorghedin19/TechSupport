@@ -53,7 +53,7 @@ public class ChamadoController {
     @Operation(summary = "Método de atualizar o status de chamados!", description = "Método reponsável em atualizar os status de chamados!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusChamadoRequest statusRequest){
 
-        var atualizarChamado = chamadoService.atualizarStatus(statusRequest.statusChamado(), id);
+        var atualizarChamado = chamadoService.atualizarStatus(statusRequest.status(), id);
 
         if (atualizarChamado) {
             return ResponseEntity.ok().build();

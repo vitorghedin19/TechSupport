@@ -2,7 +2,7 @@ package com.example.techsupport.application.DTOs;
 
 import com.example.techsupport.domain.entities.Solicitante;
 
-public record SolicitanteResponse (Long id, String nome, String email, String setor, EnumStatusSolicitante statusSolicitante) {
+public record SolicitanteResponse (Long id, String nome, String email, String setor, EnumStatusSolicitante status) {
 
     public SolicitanteResponse (Solicitante solicitanteEntidade) {
         this(

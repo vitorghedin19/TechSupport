@@ -2,7 +2,7 @@ package com.example.techsupport.application.DTOs;
 
 import com.example.techsupport.domain.entities.Chamado;
 
-public record ChamadoResponse (Long id, String titulo, String descricao, String prioridade, EnumStatusChamado statusChamado, String solucao) {
+public record ChamadoResponse (Long id, String titulo, String descricao, String prioridade, EnumStatusChamado status, String solucao) {
 
     public ChamadoResponse (Chamado chamadoEntidade) {
         this(

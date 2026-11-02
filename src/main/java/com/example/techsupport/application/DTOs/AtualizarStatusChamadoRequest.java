@@ -1,4 +1,4 @@
 package com.example.techsupport.application.DTOs;
 
-public record AtualizarStatusChamadoRequest(EnumStatusChamado statusChamado) {
+public record AtualizarStatusChamadoRequest(EnumStatusChamado status) {
 }

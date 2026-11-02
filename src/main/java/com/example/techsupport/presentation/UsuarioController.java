@@ -85,7 +85,7 @@ public class UsuarioController {
     @Operation(summary = "Método de atualizar o status de usuários!", description = "Método reponsável em atualizar os status de usuários!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusUsuarioRequest statusRequest) {
 
-        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.statusUsuario(), id);
+        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.status(), id);
 
         if (atualizarUsuario) {
             return ResponseEntity.ok().build();

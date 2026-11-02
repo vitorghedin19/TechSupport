@@ -58,7 +58,7 @@ public class EquipamentoController {
     @Operation(summary = "Método de atualizar o status de equipamentos!", description = "Método reponsável em atualizar os status de equipamentos!")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusEquipamentoRequest statusRequest){
 
-        var atualizarEquipamento = equipamentoService.atualizarStatus(statusRequest.statusEquipamento(), id);
+        var atualizarEquipamento = equipamentoService.atualizarStatus(statusRequest.status(), id);
 
         if (atualizarEquipamento) {
             return ResponseEntity.ok().build();

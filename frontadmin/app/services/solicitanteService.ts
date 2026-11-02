@@ -46,3 +46,7 @@ export async function salvarSolicitante(solicitante: Solicitante): Promise<numbe
     var dadosRetorno = await api.post<number>('/solicitante', solicitante);
     return dadosRetorno.data;
 }
+
+export async function buscarSolicitanteLogado() : Promise<Solicitante>{
+    return (await api.get<Solicitante>('/solicitante/buscarsolicitantelogado')).data
+}
