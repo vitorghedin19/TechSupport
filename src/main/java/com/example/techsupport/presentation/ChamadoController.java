@@ -67,6 +67,9 @@ public class ChamadoController {
 
         try {
             ChamadoResponse chamadoBanco = chamadoService.salvarChamado(chamado, id);
+            if (chamadoBanco == null) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.ok(chamadoBanco);
 
         } catch (Exception e) {
@@ -86,9 +89,6 @@ public class ChamadoController {
         return ResponseEntity.notFound().build();
     }
 
-    // NOVO: unico caminho pra marcar um chamado como RESOLVIDO. Exige solucao no corpo
-    // da requisicao - a validacao de verdade acontece la na entidade, aqui so pega
-    // a excecao e devolve 400 com a mensagem pro front.
     @PatchMapping("/{id}/resolver")
     @Operation(summary = "Método de resolver chamados!", description = "Método responsável em marcar um chamado como resolvido, exigindo o registro da solução adotada.")
     public ResponseEntity<?> resolver(@PathVariable Long id, @RequestBody ResolverChamadoRequest request){

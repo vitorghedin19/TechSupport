@@ -40,7 +40,18 @@ public class SecurityConfiguration {
                         .requestMatchers("/usuarios/**")
                         .hasRole("ADMIN")
 
+                        // solicitante pode LISTAR (so os dele, o service filtra) e CRIAR chamados
+                        .requestMatchers(HttpMethod.GET, "/chamado")
+                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+
                         .requestMatchers(HttpMethod.POST, "/chamado")
+                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+
+                        // solicitante pode ver e editar UM chamado (o service confere se e dele)
+                        .requestMatchers(HttpMethod.GET, "/chamado/*")
+                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+
+                        .requestMatchers(HttpMethod.PUT, "/chamado/*")
                         .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
 
                         .anyRequest().hasAnyRole("USER", "ADMIN")

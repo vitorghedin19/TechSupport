@@ -7,9 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,15 +22,19 @@ public class Chamado {
     private EnumStatusChamado status = EnumStatusChamado.ABERTO;
     private String solucao; // NOVO: so e preenchido quando o chamado e resolvido
 
+    // Muitos chamados para UM solicitante: guarda quem abriu o chamado (coluna solicitante_id)
+    @ManyToOne
+    @JoinColumn(name = "solicitante_id")
+    private Solicitante solicitante;
+
     public Chamado (ChamadoRequest chamado){
         this.setTitulo(chamado.titulo());
         this.setDescricao(chamado.descricao());
         this.setPrioridade(chamado.prioridade());
     }
 
-    // NOVO: regra de negocio central do sistema.
-    // Nao e um "set" qualquer - essa e a UNICA forma permitida de marcar um chamado
-    // como RESOLVIDO. Se a solucao nao vier preenchida, lanca excecao e nada muda.
+    // Regra de negocio central: UNICA forma permitida de marcar um chamado como RESOLVIDO.
+    // Se a solucao nao vier preenchida, lanca excecao e nada muda.
     public void resolver(String solucaoAdotada) {
         if (solucaoAdotada == null || solucaoAdotada.isBlank()) {
             throw new IllegalArgumentException("Não é possível resolver o chamado sem registrar a solução adotada.");
