@@ -67,7 +67,7 @@ public class CadastroController {
             voltar(event);
 
         }else {
-            showMessage(Alert.AlertType.ERROR,"Erro ao salvar usuário!");
+            showMessage(Alert.AlertType.ERROR, "Erro ao salvar! Código HTTP: " + respostaApi);
         }
 
     }

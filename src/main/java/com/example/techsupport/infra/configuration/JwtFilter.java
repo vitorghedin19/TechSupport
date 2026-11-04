@@ -29,6 +29,12 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String uri = request.getRequestURI();
+        String metodo = request.getMethod();
+
+        boolean rotaDesktop = metodo.equals("POST")
+                && (uri.equals("/usuarios/admin")
+                || uri.equals("/usuarios/tecnico-empresa")
+                || uri.equals("/comunicacao/criar"));
 
         if (uri.startsWith("/swagger-ui")
                 || uri.startsWith("/v2/api-docs")
@@ -36,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.startsWith("/swagger-resources")
                 || uri.startsWith("webjars")
                 || uri.startsWith("/auth/login")
+                || rotaDesktop
         ){
             filterChain.doFilter(request,response);
             return;

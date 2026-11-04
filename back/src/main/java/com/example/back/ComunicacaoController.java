@@ -32,7 +32,7 @@ public class ComunicacaoController {
             showMessage(Alert.AlertType.INFORMATION, "Comunicação salva com sucesso!");
             voltar(event);
         }else {
-            showMessage(Alert.AlertType.ERROR, "Erro ao salvar comunicação!");
+            showMessage(Alert.AlertType.ERROR, "Erro ao salvar! Código HTTP: " + respostaApi);
         }
     } //fecha o "salvarComunicacao"
 

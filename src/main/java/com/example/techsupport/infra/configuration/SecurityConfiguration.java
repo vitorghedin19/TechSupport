@@ -31,6 +31,13 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // rotas usadas pelo desktop (bootstrapping), sem token
+                        .requestMatchers(HttpMethod.POST,
+                                "/usuarios/admin",
+                                "/usuarios/tecnico-empresa",
+                                "/comunicacao/criar"
+                        ).permitAll()
+
                         .requestMatchers("/usuarios/buscarusuariologado")
                         .hasAnyRole("USER", "ADMIN")
 

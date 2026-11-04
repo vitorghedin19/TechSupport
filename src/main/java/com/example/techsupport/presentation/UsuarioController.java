@@ -65,6 +65,18 @@ public class UsuarioController {
 
     }
 
+    @PostMapping("/tecnico-empresa")
+    @Operation(summary = "Método de criação de técnico junto com a empresa!", description = "Cria a empresa e o primeiro técnico dela na mesma transação. Usado pelo desktop no bootstrapping.")
+    public ResponseEntity<?> criarTecnicoComEmpresa(@RequestBody CriarTecnicoEmpresaRequest request) {
+
+        try {
+            return ResponseEntity.ok(usuarioService.criarTecnicoComEmpresa(request));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
     // POST /usuarios -> cadastra um novo.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

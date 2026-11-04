@@ -13,6 +13,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.example.techsupport.application.DTOs.CriarTecnicoEmpresaRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +54,17 @@ public class Usuario implements UserDetails {
         this.setSenha(criarAdminRequest.senha());
         this.setEmail(criarAdminRequest.email());
         this.setRole("ROLE_ADMIN");
+
+    }
+
+    public Usuario(CriarTecnicoEmpresaRequest request, Empresa empresa) {
+
+        this.setCpf(new CPF(request.cpf()));
+        this.setNome(request.nome());
+        this.setSenha(request.senha());
+        this.setEmail(request.email());
+        this.setRole("ROLE_USER");
+        this.setEmpresa(empresa);
 
     }
 

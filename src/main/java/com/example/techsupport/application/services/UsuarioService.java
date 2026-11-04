@@ -1,13 +1,16 @@
 package com.example.techsupport.application.services;
 
 import com.example.techsupport.application.DTOs.*;
+import com.example.techsupport.domain.entities.Empresa;
 import com.example.techsupport.domain.entities.Usuario;
+import com.example.techsupport.domain.repository.EmpresaRepository;
 import com.example.techsupport.domain.repository.UsuarioRepository;
 import com.example.techsupport.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,12 +24,15 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private EmpresaRepository empresaRepository;
+
+    @Autowired
     private TokenService tokenService;
 
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
         if (usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
-            var token = tokenService.gerarTokenUsuario(request); // antes era "gerarToken"
+            var token = tokenService.gerarTokenUsuario(request);
             return new LoginResponse(token);
         }
         return null;
@@ -64,6 +70,26 @@ public class UsuarioService {
 
     }
 
+    @Transactional
+    public CriarTecnicoEmpresaResponse criarTecnicoComEmpresa(CriarTecnicoEmpresaRequest request) {
+
+        if (!secret.equals(request.secretKey())) {
+            throw new RuntimeException("Chave secreta inválida!");
+        }
+
+        Empresa empresa = new Empresa();
+        empresa.setRazaoSocial(request.razaoSocial());
+        empresa.setNomeFantasia(request.nomeFantasia());
+        empresa.setCnpj(request.cnpj());
+        empresaRepository.save(empresa);
+
+        Usuario tecnico = new Usuario(request, empresa);
+        usuarioRepository.save(tecnico);
+
+        return new CriarTecnicoEmpresaResponse(tecnico.getId(), empresa.getId(), "Técnico e empresa salvos com sucesso!");
+
+    }
+
     public UsuarioLogado getUsuarioLogado(){
         return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
@@ -71,14 +97,12 @@ public class UsuarioService {
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
         var usuarioLogado = getUsuarioLogado();
-        //Novo Usuario
         if (id == 0L){
             Usuario usuarioBanco = new Usuario(usuario);
             usuarioRepository.save(usuarioBanco);
 
             return new UsuarioResponse(usuarioBanco);
         } else {
-            //Usuario existente
             Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
             if ( usuarioBanco != null ){
                 usuarioBanco.setCpf(new CPF(usuario.cpf()));

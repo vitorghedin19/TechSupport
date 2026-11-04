@@ -26,6 +26,18 @@ public class MenuController {
 
     }
 
+    @FXML
+    public void abrirCadastroEmpresa(ActionEvent event) throws IOException {
+
+        FXMLLoader loader =
+                new FXMLLoader(getClass().getResource("/com/example/back/cadastro-empresa-view.fxml"));
+
+        Scene scene = new Scene(loader.load());
+        Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        stage.setScene(scene);
+
+    }
+
     // Clique no botão de comunicação: mesma ideia, mas abre a comunicacao-view.fxml.
     @FXML
     public void abrirComunicacao(ActionEvent event) throws IOException{

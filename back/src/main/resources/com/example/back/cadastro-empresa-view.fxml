@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.CadastroEmpresaController">
+    <children>
+        <Label layoutX="60.0" layoutY="25.0" text="Empresa" />
+        <Label layoutX="60.0" layoutY="55.0" text="Razão social:" />
+        <TextField fx:id="txtRazaoSocial" layoutX="150.0" layoutY="51.0" prefWidth="200.0" />
+        <Label layoutX="60.0" layoutY="90.0" text="Nome fantasia:" />
+        <TextField fx:id="txtNomeFantasia" layoutX="150.0" layoutY="86.0" prefWidth="200.0" />
+        <Label layoutX="60.0" layoutY="125.0" text="CNPJ:" />
+        <TextField fx:id="txtCnpj" layoutX="150.0" layoutY="121.0" prefWidth="200.0" />
+
+        <Label layoutX="60.0" layoutY="170.0" text="Técnico" />
+        <Label layoutX="60.0" layoutY="200.0" text="Nome:" />
+        <TextField fx:id="txtNome" layoutX="150.0" layoutY="196.0" prefWidth="200.0" />
+        <Label layoutX="60.0" layoutY="235.0" text="CPF:" />
+        <TextField fx:id="txtCpf" layoutX="150.0" layoutY="231.0" prefWidth="200.0" />
+        <Label layoutX="60.0" layoutY="270.0" text="Email:" />
+        <TextField fx:id="txtEmail" layoutX="150.0" layoutY="266.0" prefWidth="200.0" />
+        <Label layoutX="60.0" layoutY="305.0" text="Senha:" />
+        <TextField fx:id="txtSenha" layoutX="150.0" layoutY="301.0" prefWidth="200.0" />
+
+        <Button layoutX="507.0" layoutY="355.0" mnemonicParsing="false" onAction="#salvar" prefHeight="25.0" prefWidth="71.0" text="Salvar" />
+        <Button layoutX="26.0" layoutY="355.0" mnemonicParsing="false" onAction="#voltar" text="Voltar" />
+    </children>
+</AnchorPane>
