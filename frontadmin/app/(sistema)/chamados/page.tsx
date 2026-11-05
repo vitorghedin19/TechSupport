@@ -1,15 +1,23 @@
 "use client"
 
-import { atualizarStatusChamado, buscarListaChamados, deletarChamado } from "@/app/services/chamadoService";
+import { atualizarStatusChamado, buscarListaChamados, deletarChamado, resolverChamado } from "@/app/services/chamadoService";
 import { Chamado } from "@/app/types/chamado";
+import { RootState } from "@/app/redux/store";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import { useSelector } from "react-redux";
+import ResolverChamadoModal from "../components/ResolverChamadoModal";
+import VerSolucaoModal from "../components/VerSolucaoModal";
 
 export default function Chamados(){
 
    
     const [chamados,setChamados] = useState<Chamado[]>([])
+    const [chamadoParaResolver, setChamadoParaResolver] = useState<Chamado | null>(null)
+    const [chamadoParaVerSolucao, setChamadoParaVerSolucao] = useState<Chamado | null>(null)
+
+    const usuario = useSelector((state: RootState) => state.auth.usuario);
+    const ehSolicitante = usuario != null && "setor" in usuario;
 
     useEffect(() => {
         carregarDados();
@@ -53,6 +61,22 @@ export default function Chamados(){
 
     }
 
+    const handleResolverChamado = async(solucao: string) => {
+
+        if (!chamadoParaResolver) {
+            return;
+        }
+
+        try{
+            await resolverChamado(chamadoParaResolver.id || 0, solucao);
+            setChamadoParaResolver(null);
+            carregarDados();
+        } catch (error){
+            alert("Erro ao resolver chamado!");
+        }
+
+    }
+
     return(
 
         <div className="min-h-screen bg-slate-950 px-6 py-8">
@@ -88,6 +112,18 @@ export default function Chamados(){
                             <div className="flex items-center justify-center gap-4">
                                 {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/chamados/[codigo]/editar. */}
                                 <Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
+                                {/* Ícone de documento: só aparece quando o chamado tem solução registrada. Qualquer perfil pode ver. */}
+                                {chamado.solucao && (
+                                    <button onClick={()=> setChamadoParaVerSolucao(chamado)} title="Ver solução" aria-label="Ver solução" className="text-slate-400 hover:text-green-400 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-5 h-5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                        </svg>
+                                    </button>
+                                )}
+                                {/* Só aparece para técnico/admin e enquanto o chamado ainda não foi resolvido nem excluído. Abre o popup da solução. */}
+                                {!ehSolicitante && chamado.status !== 'RESOLVIDO' && chamado.status !== 'EXCLUIDO' && (
+                                    <button onClick={()=> setChamadoParaResolver(chamado)} className="text-sm font-medium transition-colors text-green-500 hover:text-green-400">Resolver</button>
+                                )}
                                 <button onClick={()=> handlerDeletarChamado(chamado)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
                                 {/* A cor do botão depende do status (ternários encadeados = if / else if / else): verde=RESOLVIDO, cinza=FECHADO, roxo=EM_ANDAMENTO, vermelho=EXCLUIDO, azul=demais (ABERTO). */}
                                 <button onClick = {()=> handleAlterarStatusChamado(chamado)}
@@ -122,6 +158,22 @@ export default function Chamados(){
                 </tbody>
             </table>
         </div>
+
+        {/* Os popups só são montados quando existe um chamado escolhido; assim o campo de texto do resolver começa vazio a cada abertura. */}
+        {chamadoParaResolver && (
+            <ResolverChamadoModal
+                chamado={chamadoParaResolver}
+                aoCancelar={() => setChamadoParaResolver(null)}
+                aoConfirmar={handleResolverChamado}
+            />
+        )}
+
+        {chamadoParaVerSolucao && (
+            <VerSolucaoModal
+                chamado={chamadoParaVerSolucao}
+                aoFechar={() => setChamadoParaVerSolucao(null)}
+            />
+        )}
     </div>
 
     )

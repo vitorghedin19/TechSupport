@@ -12,6 +12,7 @@ export class Chamado{
         public descricao:string,
         public prioridade:string,   // ex: "Alta", "Média", "Baixa"
         public status:string,       // ex: "ABERTO", "EM_ANDAMENTO", "RESOLVIDO", "FECHADO", "ATRASADO", "EXCLUIDO"
+        public solucao?:string,     // só vem preenchida depois que o chamado é resolvido
     ){}
 
 }

@@ -18,10 +18,22 @@ public class SolicitanteService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private ContextoSegurancaService contexto;
+
 
     public List<SolicitanteResponse> listarTodosSolicitantesTable(){
 
-        return solicitanteRepository.findAll()
+        List<Solicitante> solicitantes;
+
+        if (contexto.isAdmin()) {
+            solicitantes = solicitanteRepository.findAll();
+        } else {
+            Long empresaId = contexto.getEmpresaId();
+            solicitantes = empresaId == null ? List.of() : solicitanteRepository.findByEmpresa_Id(empresaId);
+        }
+
+        return solicitantes
                 .stream()
                 .map(SolicitanteResponse::new)
                 .toList();
@@ -30,7 +42,7 @@ public class SolicitanteService {
 
     public SolicitanteResponse buscarPorId(Long id) {
         var solicitante = solicitanteRepository.findById(id).orElse(null);
-        if (solicitante == null){
+        if (solicitante == null || !contexto.podeAcessar(solicitante.getEmpresa())){
             return null;
         }
         return new SolicitanteResponse(solicitante);
@@ -41,13 +53,14 @@ public class SolicitanteService {
         //Novo Solicitante
         if (id == 0L){
             Solicitante solicitanteBanco = new Solicitante(solicitante);
+            solicitanteBanco.setEmpresa(contexto.getEmpresaDoLogado());
             solicitanteRepository.save(solicitanteBanco);
             return new SolicitanteResponse(solicitanteBanco);
         }
         else {
             //Solicitante existente
             Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
-            if ( solicitanteBanco != null ){
+            if ( solicitanteBanco != null && contexto.podeAcessar(solicitanteBanco.getEmpresa()) ){
                 solicitanteBanco.setNome(solicitante.nome());
                 solicitanteBanco.setEmail(solicitante.email());
                 solicitanteBanco.setSetor(solicitante.setor());
@@ -61,7 +74,7 @@ public class SolicitanteService {
     public boolean atualizarStatus(EnumStatusSolicitante status, Long id) {
 
         Solicitante solicitanteBanco = solicitanteRepository.findById(id).orElse(null);
-        if (solicitanteBanco != null){
+        if (solicitanteBanco != null && contexto.podeAcessar(solicitanteBanco.getEmpresa())){
             solicitanteBanco.setStatus(status);
             solicitanteRepository.save(solicitanteBanco);
             return true;

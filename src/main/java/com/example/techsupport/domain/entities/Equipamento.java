@@ -25,6 +25,10 @@ public class Equipamento {
     private String tipo;
     private EnumStatusEquipamento status = EnumStatusEquipamento.ATIVO;
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
+
     public Equipamento (EquipamentoRequest equipamento){
         this.setEquipamento(equipamento.equipamento());
         this.setTipo(equipamento.tipo());

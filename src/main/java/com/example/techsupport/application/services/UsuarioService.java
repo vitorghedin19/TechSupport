@@ -29,6 +29,9 @@ public class UsuarioService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private ContextoSegurancaService contexto;
+
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
         if (usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
@@ -38,18 +41,31 @@ public class UsuarioService {
         return null;
     }
 
+    private boolean podeAcessar(Usuario usuario){
+        if (contexto.isAdmin()){
+            return true;
+        }
+        return !"ROLE_ADMIN".equals(usuario.getRole())
+                && contexto.podeAcessar(usuario.getEmpresa());
+    }
+
     public List<UsuarioResponse> listarTodosUsuarioTable(){
 
-        var usuarioLogado = getUsuarioLogado();
+        List<Usuario> usuarios;
 
-        if (usuarioLogado.empresa_id() == null){
-            return usuarioRepository.findAll()
+        if (contexto.isAdmin()){
+            usuarios = usuarioRepository.findAll();
+        } else {
+            Long empresaId = contexto.getEmpresaId();
+            usuarios = empresaId == null
+                    ? List.of()
+                    : usuarioRepository.getUsuariosByEmpresa_Id(empresaId)
                     .stream()
-                    .map(UsuarioResponse::new)
+                    .filter(u -> !"ROLE_ADMIN".equals(u.getRole()))
                     .toList();
         }
 
-        return usuarioRepository.getUsuariosByEmpresa_Id(usuarioLogado.empresa_id())
+        return usuarios
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
@@ -96,15 +112,15 @@ public class UsuarioService {
 
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
-        var usuarioLogado = getUsuarioLogado();
         if (id == 0L){
             Usuario usuarioBanco = new Usuario(usuario);
+            usuarioBanco.setEmpresa(contexto.getEmpresaDoLogado());
             usuarioRepository.save(usuarioBanco);
 
             return new UsuarioResponse(usuarioBanco);
         } else {
             Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-            if ( usuarioBanco != null ){
+            if ( usuarioBanco != null && podeAcessar(usuarioBanco) ){
                 usuarioBanco.setCpf(new CPF(usuario.cpf()));
                 usuarioBanco.setEmail(usuario.email());
                 usuarioBanco.setNome(usuario.nome());
@@ -119,7 +135,7 @@ public class UsuarioService {
     public UsuarioResponse buscarPorId(Long id) {
 
         var usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario == null){
+        if (usuario == null || !podeAcessar(usuario)){
             return null;
         }
         return new UsuarioResponse(usuario);
@@ -128,7 +144,7 @@ public class UsuarioService {
     public boolean atualizarStatus(EnumStatusUsuario statusUsuario, Long id){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if (usuarioBanco!=null){
+        if (usuarioBanco!=null && podeAcessar(usuarioBanco)){
             usuarioBanco.setStatus(statusUsuario);
             usuarioRepository.save(usuarioBanco);
             return true;

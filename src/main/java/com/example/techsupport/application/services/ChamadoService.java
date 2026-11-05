@@ -8,7 +8,6 @@ import com.example.techsupport.domain.entities.Chamado;
 import com.example.techsupport.domain.repository.ChamadoRepository;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,28 +21,30 @@ public class ChamadoService {
     @Autowired
     private SolicitanteRepository solicitanteRepository;
 
-    // Quem esta logado, lido do token. Pode ser UsuarioLogado (tecnico/admin) OU SolicitanteLogado.
-    private Object getLogado(){
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+    @Autowired
+    private ContextoSegurancaService contexto;
 
-    // Tecnico/admin acessam qualquer chamado. Solicitante so acessa os que ele mesmo abriu.
+    // Solicitante so acessa os chamados que ele mesmo abriu.
+    // Tecnico acessa os da empresa dele. Admin acessa todos.
     private boolean podeAcessar(Chamado chamado){
-        if (getLogado() instanceof SolicitanteLogado solicitanteLogado){
+        if (contexto.getLogado() instanceof SolicitanteLogado solicitanteLogado){
             return chamado.getSolicitante() != null
                     && chamado.getSolicitante().getId().equals(solicitanteLogado.id());
         }
-        return true;
+        return contexto.podeAcessar(chamado.getEmpresa());
     }
 
     public List<ChamadoResponse> listarTodosChamadosTable(){
 
         List<Chamado> chamados;
 
-        if (getLogado() instanceof SolicitanteLogado solicitanteLogado){
+        if (contexto.getLogado() instanceof SolicitanteLogado solicitanteLogado){
             chamados = chamadoRepository.findBySolicitante_Id(solicitanteLogado.id());
-        } else {
+        } else if (contexto.isAdmin()) {
             chamados = chamadoRepository.findAll();
+        } else {
+            Long empresaId = contexto.getEmpresaId();
+            chamados = empresaId == null ? List.of() : chamadoRepository.findByEmpresa_Id(empresaId);
         }
 
         return chamados
@@ -66,8 +67,9 @@ public class ChamadoService {
         //Novo Chamado
         if (id == 0L){
             Chamado chamadoBanco = new Chamado(chamado);
+            chamadoBanco.setEmpresa(contexto.getEmpresaDoLogado());
 
-            if (getLogado() instanceof SolicitanteLogado solicitanteLogado){
+            if (contexto.getLogado() instanceof SolicitanteLogado solicitanteLogado){
                 chamadoBanco.setSolicitante(solicitanteRepository.getReferenceById(solicitanteLogado.id()));
             }
 
@@ -91,7 +93,7 @@ public class ChamadoService {
     public boolean atualizarStatus(EnumStatusChamado status, Long id) {
 
         Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
-        if (chamadoBanco != null){
+        if (chamadoBanco != null && podeAcessar(chamadoBanco)){
             chamadoBanco.setStatus(status);
             chamadoRepository.save(chamadoBanco);
             return true;
@@ -104,7 +106,7 @@ public class ChamadoService {
     public ChamadoResponse resolver(Long id, String solucaoAdotada) {
 
         Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
-        if (chamadoBanco == null) {
+        if (chamadoBanco == null || !podeAcessar(chamadoBanco)) {
             return null;
         }
 

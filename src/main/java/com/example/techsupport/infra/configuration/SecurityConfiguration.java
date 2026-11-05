@@ -44,8 +44,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/solicitante/buscarsolicitantelogado")
                         .hasRole("SOLICITANTE")
 
+                        // tecnico e admin gerenciam usuarios (o service limita o tecnico a empresa dele)
                         .requestMatchers("/usuarios/**")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("USER", "ADMIN")
 
                         // solicitante pode LISTAR (so os dele, o service filtra) e CRIAR chamados
                         .requestMatchers(HttpMethod.GET, "/chamado")

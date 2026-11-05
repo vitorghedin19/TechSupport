@@ -16,10 +16,22 @@ public class EquipamentoService {
     @Autowired
     private EquipamentoRepository equipamentoRepository;
 
+    @Autowired
+    private ContextoSegurancaService contexto;
+
 
     public List<EquipamentoResponse> listarTodosEquipamentosTable(){
 
-        return equipamentoRepository.findAll()
+        List<Equipamento> equipamentos;
+
+        if (contexto.isAdmin()) {
+            equipamentos = equipamentoRepository.findAll();
+        } else {
+            Long empresaId = contexto.getEmpresaId();
+            equipamentos = empresaId == null ? List.of() : equipamentoRepository.findByEmpresa_Id(empresaId);
+        }
+
+        return equipamentos
                 .stream()
                 .map(EquipamentoResponse::new)
                 .toList();
@@ -27,7 +39,7 @@ public class EquipamentoService {
 
     public EquipamentoResponse buscarPorId(Long id) {
         var equipamento = equipamentoRepository.findById(id).orElse(null);
-        if (equipamento == null){
+        if (equipamento == null || !contexto.podeAcessar(equipamento.getEmpresa())){
             return null;
         }
         return new EquipamentoResponse(equipamento);
@@ -38,13 +50,14 @@ public class EquipamentoService {
         //Novo Equipamento
         if (id == 0L){
             Equipamento equipamentoBanco = new Equipamento(equipamento);
+            equipamentoBanco.setEmpresa(contexto.getEmpresaDoLogado());
             equipamentoRepository.save(equipamentoBanco);
             return new EquipamentoResponse(equipamentoBanco);
         }
         else {
             //Equipamento existente
             Equipamento equipamentoBanco = equipamentoRepository.findById(id).orElse(null);
-            if ( equipamentoBanco != null ){
+            if ( equipamentoBanco != null && contexto.podeAcessar(equipamentoBanco.getEmpresa()) ){
                 equipamentoBanco.setEquipamento(equipamento.equipamento());
                 equipamentoBanco.setTipo(equipamento.tipo());
                 equipamentoRepository.save(equipamentoBanco);
@@ -57,7 +70,7 @@ public class EquipamentoService {
     public boolean atualizarStatus(EnumStatusEquipamento status, Long id) {
 
         Equipamento equipamentoBanco = equipamentoRepository.findById(id).orElse(null);
-        if (equipamentoBanco != null){
+        if (equipamentoBanco != null && contexto.podeAcessar(equipamentoBanco.getEmpresa())){
             equipamentoBanco.setStatus(status);
             equipamentoRepository.save(equipamentoBanco);
             return true;

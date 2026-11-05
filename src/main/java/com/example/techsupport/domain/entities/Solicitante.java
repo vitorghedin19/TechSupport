@@ -35,6 +35,10 @@ public class Solicitante implements UserDetails {
     @Enumerated(EnumType.STRING)
     private EnumStatusSolicitante status = EnumStatusSolicitante.ATIVO;
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
+
     public void setEmail(String email) {
         if(!email.isEmpty() && !email.contains("@")){
             throw new IllegalArgumentException("E-mail Inválido!");
