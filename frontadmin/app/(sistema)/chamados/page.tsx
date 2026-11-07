@@ -92,6 +92,7 @@ export default function Chamados(){
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Código</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Título</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Descrição</th>
+                        <th className="px-4 py-3 text-sm font-medium text-slate-300">Equipamento</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Prioridade</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300 text-center">Ações</th>
@@ -106,14 +107,15 @@ export default function Chamados(){
                         <td className="px-4 py-3 text-slate-100">{chamado.id}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.titulo}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.descricao}</td>
+                        <td className="px-4 py-3 text-slate-100">{chamado.equipamentoNome || '-'}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.prioridade}</td>
                         <td className="px-4 py-3 text-slate-100">{chamado.status}</td>
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
                                 {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/chamados/[codigo]/editar. */}
                                 <Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
-                                {/* Ícone de documento: só aparece quando o chamado tem solução registrada. Qualquer perfil pode ver. */}
-                                {chamado.solucao && (
+                                {/* Ícone de documento: só aparece quando o chamado está RESOLVIDO e tem solução registrada. Qualquer perfil pode ver. */}
+                                {chamado.status === 'RESOLVIDO' && chamado.solucao && (
                                     <button onClick={()=> setChamadoParaVerSolucao(chamado)} title="Ver solução" aria-label="Ver solução" className="text-slate-400 hover:text-green-400 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-5 h-5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -143,12 +145,12 @@ export default function Chamados(){
                     </tr>
                     ))}
 
-                    {/* Estado vazio: linha de aviso quando não há chamados. colSpan={6} = as 6 colunas. */}
+                    {/* Estado vazio: linha de aviso quando não há chamados. colSpan={7} = as 7 colunas. */}
                     { chamados.length ===0 && 
                     (
 
                         <tr>
-                            <td colSpan={6} className="px-6 py-12 text-center text-slate-300">
+                            <td colSpan={7} className="px-6 py-12 text-center text-slate-300">
                                 Nenhum chamado encontrado!
                             </td>
                         </tr>

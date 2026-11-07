@@ -48,6 +48,10 @@ public class SecurityConfiguration {
                         .requestMatchers("/usuarios/**")
                         .hasAnyRole("USER", "ADMIN")
 
+                        // solicitante pode LISTAR equipamentos (so da empresa dele, o service filtra) para escolher no chamado
+                        .requestMatchers(HttpMethod.GET, "/equipamento")
+                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+
                         // solicitante pode LISTAR (so os dele, o service filtra) e CRIAR chamados
                         .requestMatchers(HttpMethod.GET, "/chamado")
                         .hasAnyRole("USER", "ADMIN", "SOLICITANTE")

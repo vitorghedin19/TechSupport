@@ -1,10 +1,12 @@
 'use client'
 
 import { Chamado, ChamadoFormProps } from "@/app/types/chamado";
+import { Equipamento } from "@/app/types/equipamento";
 import { atualizarChamado, salvarChamado } from "@/app/services/chamadoService";
+import { buscarListaEquipamentos } from "@/app/services/equipamentoService";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
 
@@ -14,6 +16,25 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
     chamadoExistente ||
     new Chamado(null, "", "", "", "ABERTO"));
 
+    const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
+
+    useEffect(() => {
+        carregarEquipamentos();
+    }, []);
+
+    const carregarEquipamentos = async () => {
+        try{
+            const lista = await buscarListaEquipamentos();
+            setEquipamentos(lista);
+        } catch (error){
+            setEquipamentos([]);
+        }
+    }
+
+    const equipamentosDisponiveis = equipamentos.filter(
+        (equipamento) => equipamento.status === 'ATIVO' || equipamento.id === chamado.equipamentoId
+    );
+
     const handlerChange = ( campo: 'titulo' | 'descricao' | 'prioridade' | 'status', valor:string) => {
         setChamado(valorAnterior => 
             new Chamado(
@@ -21,7 +42,25 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
                 campo === 'titulo' ? valor : valorAnterior.titulo,
                 campo === 'descricao' ? valor : valorAnterior.descricao,
                 campo === 'prioridade' ? valor : valorAnterior.prioridade,
-                campo === 'status' ? valor : valorAnterior.status
+                campo === 'status' ? valor : valorAnterior.status,
+                valorAnterior.solucao,
+                valorAnterior.equipamentoId,
+                valorAnterior.equipamentoNome
+            )
+        )
+    }
+
+    const handlerEquipamento = (valor:string) => {
+        setChamado(valorAnterior => 
+            new Chamado(
+                valorAnterior.id,
+                valorAnterior.titulo,
+                valorAnterior.descricao,
+                valorAnterior.prioridade,
+                valorAnterior.status,
+                valorAnterior.solucao,
+                valor === "" ? null : Number(valor),
+                valorAnterior.equipamentoNome
             )
         )
     }
@@ -86,6 +125,23 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
                     required
                     onChange={(e) => handlerChange('descricao',e.target.value)}
                     rows={4} placeholder="Descreva o problema ou solicitação" className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 resize-none"></textarea>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Equipamento
+                    </label>
+                    <select name="equipamento"
+                    value={chamado.equipamentoId ?? ""}
+                    onChange={(e) => handlerEquipamento(e.target.value)}
+                    className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
+                        <option value="">Nenhum equipamento</option>
+                        {equipamentosDisponiveis.map((equipamento) => (
+                            <option key={equipamento.id} value={equipamento.id ?? ""}>
+                                {equipamento.equipamento} - {equipamento.tipo}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

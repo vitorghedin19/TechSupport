@@ -3,14 +3,18 @@ package com.example.techsupport.application.services;
 import com.example.techsupport.application.DTOs.ChamadoRequest;
 import com.example.techsupport.application.DTOs.ChamadoResponse;
 import com.example.techsupport.application.DTOs.EnumStatusChamado;
+import com.example.techsupport.application.DTOs.EnumStatusEquipamento;
 import com.example.techsupport.application.DTOs.SolicitanteLogado;
 import com.example.techsupport.domain.entities.Chamado;
+import com.example.techsupport.domain.entities.Equipamento;
 import com.example.techsupport.domain.repository.ChamadoRepository;
+import com.example.techsupport.domain.repository.EquipamentoRepository;
 import com.example.techsupport.domain.repository.SolicitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ChamadoService {
@@ -20,6 +24,9 @@ public class ChamadoService {
 
     @Autowired
     private SolicitanteRepository solicitanteRepository;
+
+    @Autowired
+    private EquipamentoRepository equipamentoRepository;
 
     @Autowired
     private ContextoSegurancaService contexto;
@@ -32,6 +39,25 @@ public class ChamadoService {
                     && chamado.getSolicitante().getId().equals(solicitanteLogado.id());
         }
         return contexto.podeAcessar(chamado.getEmpresa());
+    }
+
+    // O equipamento escolhido no chamado precisa existir, nao estar excluido e ser da empresa de quem esta logado.
+    // Sem id (null) = chamado sem equipamento, que e permitido.
+    private Equipamento buscarEquipamentoValido(Long equipamentoId){
+
+        if (equipamentoId == null){
+            return null;
+        }
+
+        Equipamento equipamento = equipamentoRepository.findById(equipamentoId).orElse(null);
+
+        if (equipamento == null
+                || equipamento.getStatus() == EnumStatusEquipamento.EXCLUIDO
+                || !contexto.podeAcessar(equipamento.getEmpresa())){
+            throw new IllegalArgumentException("Equipamento inválido!");
+        }
+
+        return equipamento;
     }
 
     public List<ChamadoResponse> listarTodosChamadosTable(){
@@ -68,6 +94,7 @@ public class ChamadoService {
         if (id == 0L){
             Chamado chamadoBanco = new Chamado(chamado);
             chamadoBanco.setEmpresa(contexto.getEmpresaDoLogado());
+            chamadoBanco.setEquipamento(buscarEquipamentoValido(chamado.equipamentoId()));
 
             if (contexto.getLogado() instanceof SolicitanteLogado solicitanteLogado){
                 chamadoBanco.setSolicitante(solicitanteRepository.getReferenceById(solicitanteLogado.id()));
@@ -77,9 +104,16 @@ public class ChamadoService {
             return new ChamadoResponse(chamadoBanco);
         }
         else {
-            //Chamado existente: so edita titulo, descricao e prioridade (status e solucao ficam de fora)
+            //Chamado existente: so edita titulo, descricao, prioridade e equipamento (status e solucao ficam de fora)
             Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
             if ( chamadoBanco != null && podeAcessar(chamadoBanco) ){
+
+                Long equipamentoAtualId = chamadoBanco.getEquipamento() != null ? chamadoBanco.getEquipamento().getId() : null;
+
+                if (!Objects.equals(equipamentoAtualId, chamado.equipamentoId())){
+                    chamadoBanco.setEquipamento(buscarEquipamentoValido(chamado.equipamentoId()));
+                }
+
                 chamadoBanco.setTitulo(chamado.titulo());
                 chamadoBanco.setDescricao(chamado.descricao());
                 chamadoBanco.setPrioridade(chamado.prioridade());

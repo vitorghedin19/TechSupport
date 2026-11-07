@@ -13,6 +13,8 @@ export class Chamado{
         public prioridade:string,   // ex: "Alta", "Média", "Baixa"
         public status:string,       // ex: "ABERTO", "EM_ANDAMENTO", "RESOLVIDO", "FECHADO", "ATRASADO", "EXCLUIDO"
         public solucao?:string,     // só vem preenchida depois que o chamado é resolvido
+        public equipamentoId?:number | null,  // id do equipamento escolhido na caixa de seleção (chave estrangeira no back)
+        public equipamentoNome?:string,       // nome do equipamento, só para exibir na tabela
     ){}
 
 }

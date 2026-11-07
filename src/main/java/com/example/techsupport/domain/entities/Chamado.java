@@ -31,6 +31,10 @@ public class Chamado {
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
 
+    @ManyToOne
+    @JoinColumn(name = "equipamento_id")
+    private Equipamento equipamento;
+
     public Chamado (ChamadoRequest chamado){
         this.setTitulo(chamado.titulo());
         this.setDescricao(chamado.descricao());
