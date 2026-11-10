@@ -126,6 +126,10 @@ public class ChamadoService {
 
     public boolean atualizarStatus(EnumStatusChamado status, Long id) {
 
+        if (status == EnumStatusChamado.RESOLVIDO) {
+            throw new IllegalArgumentException("Para resolver um chamado, informe a solução pelo endpoint de resolver!");
+        }
+
         Chamado chamadoBanco = chamadoRepository.findById(id).orElse(null);
         if (chamadoBanco != null && podeAcessar(chamadoBanco)){
             chamadoBanco.setStatus(status);

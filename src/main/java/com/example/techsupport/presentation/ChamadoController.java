@@ -51,14 +51,18 @@ public class ChamadoController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Método de atualizar o status de chamados!", description = "Método reponsável em atualizar os status de chamados!")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusChamadoRequest statusRequest){
+    public ResponseEntity<?> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusChamadoRequest statusRequest){
 
-        var atualizarChamado = chamadoService.atualizarStatus(statusRequest.status(), id);
+        try {
+            var atualizarChamado = chamadoService.atualizarStatus(statusRequest.status(), id);
 
-        if (atualizarChamado) {
-            return ResponseEntity.ok().build();
+            if (atualizarChamado) {
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
