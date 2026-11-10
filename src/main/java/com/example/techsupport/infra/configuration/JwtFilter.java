@@ -36,6 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.equals("/usuarios/tecnico-empresa")
                 || uri.equals("/comunicacao/criar"));
 
+        boolean consultaCnpj = metodo.equals("GET")
+                && uri.startsWith("/empresa/consulta-cnpj/");
+
         if (uri.startsWith("/swagger-ui")
                 || uri.startsWith("/v2/api-docs")
                 || uri.startsWith("/v3/api-docs")
@@ -43,6 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.startsWith("webjars")
                 || uri.startsWith("/auth/login")
                 || rotaDesktop
+                || consultaCnpj
         ){
             filterChain.doFilter(request,response);
             return;

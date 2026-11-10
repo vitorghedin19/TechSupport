@@ -9,9 +9,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CadastroEmpresaController {
 
@@ -37,6 +41,29 @@ public class CadastroEmpresaController {
 
     @FXML
     private TextField txtSenha;
+
+    @FXML
+    protected void buscarCnpj(ActionEvent event) throws Exception {
+
+        String cnpj = txtCnpj.getText().replaceAll("[^0-9]", "");
+
+        URL urlAPI = new URL("http://localhost:8080/empresa/consulta-cnpj/" + cnpj);
+
+        HttpURLConnection connection = (HttpURLConnection) urlAPI.openConnection();
+        connection.setRequestMethod("GET");
+
+        int respostaApi = connection.getResponseCode();
+
+        if (respostaApi == 200) {
+            String corpo = lerCorpo(connection.getInputStream());
+            txtRazaoSocial.setText(extrairCampo(corpo, "razaoSocial"));
+            txtNomeFantasia.setText(extrairCampo(corpo, "nomeFantasia"));
+        } else {
+            String erro = lerCorpo(connection.getErrorStream());
+            showMessage(Alert.AlertType.ERROR, erro.isEmpty() ? "Erro ao consultar CNPJ! Código HTTP: " + respostaApi : erro);
+        }
+
+    }
 
     @FXML
     protected void salvar(ActionEvent event) throws Exception {
@@ -89,6 +116,23 @@ public class CadastroEmpresaController {
         }
 
         return connection.getResponseCode();
+    }
+
+    private String lerCorpo(InputStream stream) throws IOException {
+        if (stream == null) {
+            return "";
+        }
+        try (stream) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private String extrairCampo(String json, String campo) {
+        Matcher matcher = Pattern.compile("\"" + campo + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").matcher(json);
+        if (matcher.find()) {
+            return matcher.group(1).replace("\\\"", "\"").replace("\\\\", "\\");
+        }
+        return "";
     }
 
     private void showMessage(Alert.AlertType type, String msg){

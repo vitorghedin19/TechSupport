@@ -38,6 +38,10 @@ public class SecurityConfiguration {
                                 "/comunicacao/criar"
                         ).permitAll()
 
+                        // consulta externa de CNPJ usada pelo desktop no cadastro de empresa, sem token
+                        .requestMatchers(HttpMethod.GET, "/empresa/consulta-cnpj/*")
+                        .permitAll()
+
                         .requestMatchers("/usuarios/buscarusuariologado")
                         .hasAnyRole("USER", "ADMIN")
 
