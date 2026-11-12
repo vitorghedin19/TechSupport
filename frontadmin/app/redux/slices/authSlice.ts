@@ -2,14 +2,10 @@ import { AuthState } from "@/app/types/auth";
 import { Usuario } from "@/app/types/usuario";
 import { Solicitante } from "@/app/types/solicitante";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
-
-const usuarioRecover = Cookies.get('usuario');
-const tokenRecover = Cookies.get('token');
 
 const initialState: AuthState = {
-    usuario: usuarioRecover ? JSON.parse(usuarioRecover) as Usuario | Solicitante : null,
-    token: tokenRecover ?? ""
+    usuario: null,
+    token: ""
 }
 
 
@@ -17,19 +13,18 @@ const authSlice = createSlice({
     name : 'auth',
     initialState,
     reducers:{
-        login:(state, action: PayloadAction<{token:string, usuario:Usuario | Solicitante}>) => {
+        definirToken:(state, action: PayloadAction<string>) => {
 
-            Cookies.set('token', action.payload.token, { secure: true, expires: 7 });
-            Cookies.set('usuario', JSON.stringify(action.payload.usuario),{expires: 7});
+            state.token = action.payload;
+
+        },
+        login:(state, action: PayloadAction<{token:string, usuario:Usuario | Solicitante}>) => {
 
             state.token = action.payload.token;
             state.usuario = action.payload.usuario;
 
         },
         logout:(state) => {
-
-            Cookies.remove('token');
-            Cookies.remove('usuario');
 
             state.token = "";
             state.usuario = null;
@@ -39,5 +34,5 @@ const authSlice = createSlice({
     }
 });
 
-export const {login,logout} = authSlice.actions;
+export const {definirToken,login,logout} = authSlice.actions;
 export default authSlice.reducer;

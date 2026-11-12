@@ -19,7 +19,11 @@ export default function SistemaLayout({children}){
         if (usuario == null) {
             router.push("/login");
         }
-    })
+    }, [usuario, router]);
+
+    if (usuario == null) {
+        return null;
+    }
 
     return (
     

@@ -1,12 +1,11 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { login } from "../redux/slices/authSlice";
+import { definirToken, login, logout } from "../redux/slices/authSlice";
 import { loginBack } from "../services/authService";
 import { buscarUsuarioLogado } from "../services/usuarioService";
 import { buscarSolicitanteLogado } from "../services/solicitanteService";
 import { useDispatch } from "react-redux";
-import Cookies from "js-cookie";
 
 export default function Login(){
 
@@ -20,7 +19,7 @@ export default function Login(){
 
         var loginResposta = await loginBack(emailTela, senhaTela);
 
-        Cookies.set('token', loginResposta.token, {secure: true, expires: 7});
+        dispatch(definirToken(loginResposta.token));
 
         try{
             var usuarioLogado = await buscarUsuarioLogado();
@@ -36,6 +35,8 @@ export default function Login(){
         }
 
     } catch (error: any) {
+
+        dispatch(logout());
 
         console.log("Falha no login:", error.config?.url, error.response?.status, error.response?.data);
         alert("Login ou senha Inválido");
