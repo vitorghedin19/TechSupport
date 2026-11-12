@@ -4,6 +4,9 @@ import { Chamado, ChamadoFormProps } from "@/app/types/chamado";
 import { Equipamento } from "@/app/types/equipamento";
 import { atualizarChamado, salvarChamado } from "@/app/services/chamadoService";
 import { buscarListaEquipamentos } from "@/app/services/equipamentoService";
+import { RootState } from "@/app/redux/store";
+import { registrarUso } from "@/app/redux/slices/equipamentosRecentesSlice";
+import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,6 +14,10 @@ import { useEffect, useState } from "react";
 export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
 
     const router = useRouter();
+
+    // Redux: lê a lista de ids usados recentemente e usa o dispatch para registrar um novo uso ao salvar.
+    const dispatch = useDispatch();
+    const idsRecentes = useSelector((state: RootState) => state.equipamentosRecentes.ids);
 
     const [chamado, setChamado] = useState<Chamado>(
     chamadoExistente ||
@@ -33,6 +40,15 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
 
     const equipamentosDisponiveis = equipamentos.filter(
         (equipamento) => equipamento.status === 'ATIVO' || equipamento.id === chamado.equipamentoId
+    );
+
+    // Os recentes são os ids guardados no Redux que ainda estão disponíveis (ativos) nesta lista, na ordem do mais recente.
+    const equipamentosRecentes = idsRecentes
+        .map((id) => equipamentosDisponiveis.find((equipamento) => equipamento.id === id))
+        .filter((equipamento): equipamento is Equipamento => equipamento !== undefined);
+
+    const equipamentosOutros = equipamentosDisponiveis.filter(
+        (equipamento) => !idsRecentes.includes(equipamento.id ?? -1)
     );
 
     const handlerChange = ( campo: 'titulo' | 'descricao' | 'prioridade' | 'status', valor:string) => {
@@ -89,6 +105,11 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
                 return;
             }
         }
+        // Guarda no Redux o equipamento usado neste chamado, para aparecer em "Usados recentemente" nos próximos.
+        if (chamado.equipamentoId != null) {
+            dispatch(registrarUso(chamado.equipamentoId));
+        }
+
         router.push("/chamados");
 
     }
@@ -136,11 +157,22 @@ export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
                     onChange={(e) => handlerEquipamento(e.target.value)}
                     className="bg-slate-950/80 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
                         <option value="">Nenhum equipamento</option>
-                        {equipamentosDisponiveis.map((equipamento) => (
-                            <option key={equipamento.id} value={equipamento.id ?? ""}>
-                                {equipamento.equipamento} - {equipamento.tipo}
-                            </option>
-                        ))}
+                        {equipamentosRecentes.length > 0 && (
+                            <optgroup label="Usados recentemente">
+                                {equipamentosRecentes.map((equipamento) => (
+                                    <option key={equipamento.id} value={equipamento.id ?? ""}>
+                                        {equipamento.equipamento} - {equipamento.tipo}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        )}
+                        <optgroup label="Todos os equipamentos">
+                            {equipamentosOutros.map((equipamento) => (
+                                <option key={equipamento.id} value={equipamento.id ?? ""}>
+                                    {equipamento.equipamento} - {equipamento.tipo}
+                                </option>
+                            ))}
+                        </optgroup>
                     </select>
                 </div>
 
