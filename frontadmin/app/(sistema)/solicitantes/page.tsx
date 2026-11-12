@@ -2,11 +2,14 @@
 
 import { atualizarStatusSolicitante, buscarListaSolicitantes, deletarSolicitante } from "@/app/services/solicitanteService";
 import { Solicitante } from "@/app/types/solicitante";
+import { usePerfil } from "@/app/hooks/usePerfil";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 
 export default function Solicitantes(){
+
+    const { ehAdmin } = usePerfil();
 
     const [solicitantes,setSolicitantes] = useState<Solicitante[]>([])
 
@@ -59,7 +62,9 @@ export default function Solicitantes(){
     <div className="min-h-screen bg-slate-950 px-6 py-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de solicitantes</h1>
-            <Link href="/solicitantes/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Solicitante</Link>
+            {!ehAdmin && (
+                <Link href="/solicitantes/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Solicitante</Link>
+            )}
         </div>
 
         <div className="max-w-5xl mx-auto rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
@@ -71,7 +76,9 @@ export default function Solicitantes(){
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Email</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Setor</th>
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
+                    {!ehAdmin && (
                     <th className="px-4 py-3 text-sm font-medium text-slate-300">Ações</th>
+                    )}
                 </tr>
                 </thead>
                 
@@ -86,6 +93,7 @@ export default function Solicitantes(){
                         <td className="px-4 py-3 text-slate-100">{solicitante.email}</td>
                         <td className="px-4 py-3 text-slate-100">{solicitante.setor}</td>
                         <td className="px-4 py-3 text-slate-100">{solicitante.status}</td>
+                        {!ehAdmin && (
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
                                 {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/solicitantes/[codigo]/editar. */}
@@ -103,6 +111,7 @@ export default function Solicitantes(){
                                         {solicitante.status}</button>
                             </div>
                         </td>
+                        )}
                     </tr>
                     ))}
 
@@ -111,7 +120,7 @@ export default function Solicitantes(){
                     (
 
                         <tr>
-                            <td colSpan={6} className="px-6 py-12 text-center text-slate-300">
+                            <td colSpan={ehAdmin ? 5 : 6} className="px-6 py-12 text-center text-slate-300">
                                 Nenhum solicitante encontrado!
                             </td>
                         </tr>

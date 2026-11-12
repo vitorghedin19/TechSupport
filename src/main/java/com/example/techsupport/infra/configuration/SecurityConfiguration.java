@@ -48,29 +48,24 @@ public class SecurityConfiguration {
                         .requestMatchers("/solicitante/buscarsolicitantelogado")
                         .hasRole("SOLICITANTE")
 
-                        // tecnico e admin gerenciam usuarios (o service limita o tecnico a empresa dele)
-                        .requestMatchers("/usuarios/**")
-                        .hasAnyRole("USER", "ADMIN")
-
                         // solicitante pode LISTAR equipamentos (so da empresa dele, o service filtra) para escolher no chamado
-                        .requestMatchers(HttpMethod.GET, "/equipamento")
+                        // e LISTAR/VER chamados (so os dele, o service filtra); admin tambem pode consultar
+                        .requestMatchers(HttpMethod.GET, "/equipamento", "/chamado", "/chamado/*")
                         .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
 
-                        // solicitante pode LISTAR (so os dele, o service filtra) e CRIAR chamados
-                        .requestMatchers(HttpMethod.GET, "/chamado")
-                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
-
+                        // solicitante pode CRIAR e EDITAR chamado (o service confere se e dele); admin NAO escreve
                         .requestMatchers(HttpMethod.POST, "/chamado")
-                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
-
-                        // solicitante pode ver e editar UM chamado (o service confere se e dele)
-                        .requestMatchers(HttpMethod.GET, "/chamado/*")
-                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+                        .hasAnyRole("USER", "SOLICITANTE")
 
                         .requestMatchers(HttpMethod.PUT, "/chamado/*")
-                        .hasAnyRole("USER", "ADMIN", "SOLICITANTE")
+                        .hasAnyRole("USER", "SOLICITANTE")
 
-                        .anyRequest().hasAnyRole("USER", "ADMIN")
+                        // admin so CONSULTA: qualquer outro GET e liberado para tecnico e admin
+                        .requestMatchers(HttpMethod.GET, "/**")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        // todo o resto (cadastrar, editar, excluir, resolver, mudar status) e so do tecnico
+                        .anyRequest().hasRole("USER")
                 )
                 .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

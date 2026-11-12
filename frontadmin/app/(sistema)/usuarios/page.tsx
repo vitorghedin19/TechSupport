@@ -2,6 +2,7 @@
 
 import { atualizarStatusUsuario, buscarListaUsuarios, deletarUsuario } from "@/app/services/usuarioService";
 import { Usuario } from "@/app/types/usuario";
+import { usePerfil } from "@/app/hooks/usePerfil";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -9,6 +10,8 @@ import { useEffect, useState } from "react";
 export default function Usuarios(){
 
    
+    const { ehAdmin } = usePerfil();
+
     const [usuarios,setUsuarios] = useState<Usuario[]>([])
 
     useEffect(() => {
@@ -58,7 +61,9 @@ export default function Usuarios(){
     <div className="min-h-screen bg-slate-950 px-6 py-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de usuários</h1>
-            <Link href="/usuarios/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Usuário</Link>
+            {!ehAdmin && (
+                <Link href="/usuarios/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Usuário</Link>
+            )}
         </div>
 
         <div className="max-w-5xl mx-auto rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
@@ -70,7 +75,9 @@ export default function Usuarios(){
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">CPF</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">E-mail</th>
                         <th className="px-4 py-3 text-sm font-medium text-slate-300">Status</th>
+                        {!ehAdmin && (
                         <th className="px-4 py-3 text-sm font-medium text-slate-300 text-center">Ações</th>
+                        )}
                     </tr>
                 </thead>
                 
@@ -84,6 +91,7 @@ export default function Usuarios(){
                         <td className="px-4 py-3 text-slate-100">{usuario.cpf}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.email}</td>
                         <td className="px-4 py-3 text-slate-100">{usuario.status}</td>
+                        {!ehAdmin && (
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
                                 <Link href={`/usuarios/${usuario.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
@@ -100,6 +108,7 @@ export default function Usuarios(){
                                         {usuario.status}</button>
                             </div>
                         </td>
+                        )}
                     </tr>
                     ))}
 
@@ -107,7 +116,7 @@ export default function Usuarios(){
                     (
 
                         <tr>
-                            <td colSpan={6} className="px-6 py-12 text-center text-slate-300">
+                            <td colSpan={ehAdmin ? 5 : 6} className="px-6 py-12 text-center text-slate-300">
                                 Nenhum usuário encontrado!
                             </td>
                         </tr>

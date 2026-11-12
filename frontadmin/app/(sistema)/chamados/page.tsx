@@ -2,10 +2,9 @@
 
 import { atualizarStatusChamado, buscarListaChamados, deletarChamado, resolverChamado } from "@/app/services/chamadoService";
 import { Chamado } from "@/app/types/chamado";
-import { RootState } from "@/app/redux/store";
+import { usePerfil } from "@/app/hooks/usePerfil";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import ResolverChamadoModal from "../components/ResolverChamadoModal";
 import VerSolucaoModal from "../components/VerSolucaoModal";
 
@@ -16,8 +15,7 @@ export default function Chamados(){
     const [chamadoParaResolver, setChamadoParaResolver] = useState<Chamado | null>(null)
     const [chamadoParaVerSolucao, setChamadoParaVerSolucao] = useState<Chamado | null>(null)
 
-    const usuario = useSelector((state: RootState) => state.auth.usuario);
-    const ehSolicitante = usuario != null && "setor" in usuario;
+    const { ehAdmin, ehSolicitante } = usePerfil();
 
     useEffect(() => {
         carregarDados();
@@ -82,7 +80,9 @@ export default function Chamados(){
         <div className="min-h-screen bg-slate-950 px-6 py-8">
         <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl font-semibold text-slate-100">Gestão de chamados</h1>
-            <Link href="/chamados/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Chamado</Link>
+            {!ehAdmin && (
+                <Link href="/chamados/novo" className="rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 transition">Cadastrar Chamado</Link>
+            )}
         </div>
 
         <div className="max-w-5xl mx-auto rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
@@ -113,7 +113,9 @@ export default function Chamados(){
                         <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-4">
                                 {/* Link DINÂMICO: o id vai na URL e abre app/(sistema)/chamados/[codigo]/editar. */}
-                                <Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
+                                {!ehAdmin && (
+                                    <Link href={`/chamados/${chamado.id}/editar`} className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors">Editar</Link>
+                                )}
                                 {/* Ícone de documento: só aparece quando o chamado está RESOLVIDO e tem solução registrada. Qualquer perfil pode ver. */}
                                 {chamado.status === 'RESOLVIDO' && chamado.solucao && (
                                     <button onClick={()=> setChamadoParaVerSolucao(chamado)} title="Ver solução" aria-label="Ver solução" className="text-slate-400 hover:text-green-400 transition-colors">
@@ -122,12 +124,15 @@ export default function Chamados(){
                                         </svg>
                                     </button>
                                 )}
-                                {/* Só aparece para técnico/admin e enquanto o chamado ainda não foi resolvido nem excluído. Abre o popup da solução. */}
-                                {!ehSolicitante && chamado.status !== 'RESOLVIDO' && chamado.status !== 'EXCLUIDO' && (
+                                {/* Só aparece para o técnico e enquanto o chamado ainda não foi resolvido nem excluído. Abre o popup da solução. */}
+                                {!ehSolicitante && !ehAdmin && chamado.status !== 'RESOLVIDO' && chamado.status !== 'EXCLUIDO' && (
                                     <button onClick={()=> setChamadoParaResolver(chamado)} className="text-sm font-medium transition-colors text-green-500 hover:text-green-400">Resolver</button>
                                 )}
-                                <button onClick={()=> handlerDeletarChamado(chamado)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
+                                {!ehAdmin && (
+                                    <button onClick={()=> handlerDeletarChamado(chamado)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
+                                )}
                                 {/* A cor do botão depende do status (ternários encadeados = if / else if / else): verde=RESOLVIDO, cinza=FECHADO, roxo=EM_ANDAMENTO, vermelho=EXCLUIDO, azul=demais (ABERTO). */}
+                                {!ehAdmin && (
                                 <button onClick = {()=> handleAlterarStatusChamado(chamado)}
                                        className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${
                                          chamado.status ==='RESOLVIDO'?'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20'
@@ -140,6 +145,7 @@ export default function Chamados(){
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                         </svg>
                                         {chamado.status}</button>
+                                )}
                             </div>
                         </td>
                     </tr>

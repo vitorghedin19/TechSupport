@@ -13,7 +13,8 @@ export class Usuario{
         public email:string,
         public status:string,        // ex: "ATIVO", "BLOQUEADO"
         public cpf:string,
-        public senha: string
+        public senha: string,
+        public role?: string         // perfil vindo do backend: "ROLE_ADMIN" ou "ROLE_USER" (técnico); opcional pra não quebrar quem cria Usuario na mão
     ){}
 
 }
