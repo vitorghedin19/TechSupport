@@ -128,11 +128,11 @@ export default function Chamados(){
                                 {!ehSolicitante && !ehAdmin && chamado.status !== 'RESOLVIDO' && chamado.status !== 'EXCLUIDO' && (
                                     <button onClick={()=> setChamadoParaResolver(chamado)} className="text-sm font-medium transition-colors text-green-500 hover:text-green-400">Resolver</button>
                                 )}
-                                {!ehAdmin && (
+                                {!ehAdmin && !ehSolicitante && (
                                     <button onClick={()=> handlerDeletarChamado(chamado)} className="text-sm font-medium transition-colors text-red-500 hover:text-red-400">Deletar</button>
                                 )}
                                 {/* A cor do botão depende do status (ternários encadeados = if / else if / else): verde=RESOLVIDO, cinza=FECHADO, roxo=EM_ANDAMENTO, vermelho=EXCLUIDO, azul=demais (ABERTO). */}
-                                {!ehAdmin && (
+                                {!ehAdmin && !ehSolicitante && (
                                 <button onClick = {()=> handleAlterarStatusChamado(chamado)}
                                        className= {`inline-flex items-center gap-1.5 font-medium transition-colors px-3 py-1 rounded-full border text-xs ${
                                          chamado.status ==='RESOLVIDO'?'text-green-400 border-green-500/40 bg-green-500/10 hover:bg-green-500/20'

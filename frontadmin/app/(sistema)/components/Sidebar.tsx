@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link";
+import { usePerfil } from "@/app/hooks/usePerfil";
 
 // Sidebar: menu lateral fixo com os links de navegação do sistema.
 //
@@ -7,6 +10,9 @@ import Link from "next/link";
 // sem recarregar o site inteiro do zero. É por isso que a navegação entre as telas
 // do painel é instantânea.
 export default function Sidebar(){
+
+    // O solicitante só enxerga Home e Chamados; os demais links são do técnico/admin.
+    const { ehSolicitante } = usePerfil();
 
     return(<aside className="w-64 min-h-screen bg-slate-900 border-r border-slate-800 flex flex-col">
 
@@ -18,10 +24,10 @@ export default function Sidebar(){
             arquivo estando dentro do route group (sistema) — que não entra na URL. */}
         <nav className="flex flex-col gap-1 px-3 py-4">
             <Link href="/home" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Home</Link>
-            <Link href="/usuarios" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Usuários</Link>
-            <Link href="/equipamentos" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Equipamentos</Link>
+            {!ehSolicitante && <Link href="/usuarios" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Usuários</Link>}
+            {!ehSolicitante && <Link href="/equipamentos" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Equipamentos</Link>}
             <Link href="/chamados" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Chamados</Link>
-            <Link href="/solicitantes" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Solicitantes</Link>
+            {!ehSolicitante && <Link href="/solicitantes" className="px-3 py-2 rounded-md text-sm font-medium text-slate-100 hover:bg-blue-600 hover:text-white transition-colors">Solicitantes</Link>}
         </nav>
     </aside>)
 
