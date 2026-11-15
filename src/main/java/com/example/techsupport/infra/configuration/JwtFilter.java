@@ -9,21 +9,24 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collection;
 
-@Component
+// De proposito NAO tem @Component: se fosse um bean, o Spring Boot registraria o filtro sozinho em toda
+// requisicao, mesmo sem estar no SecurityConfiguration. Assim ele so existe se o SecurityConfiguration o criar
+// (new JwtFilter(...)) e o colocar na cadeia (addFilterBefore). Tirar essa linha realmente desliga o filtro.
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
+
+    public JwtFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -1,5 +1,6 @@
 package com.example.techsupport.infra.configuration;
 
+import com.example.techsupport.application.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     @Autowired
-    private JwtFilter jwtFilter;
+    private TokenService tokenService;
 
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
@@ -67,7 +68,7 @@ public class SecurityConfiguration {
                         // todo o resto (cadastrar, editar, excluir, resolver, mudar status) e so do tecnico
                         .anyRequest().hasRole("USER")
                 )
-                .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore( new JwtFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
                 .build();
 
     }
