@@ -19,7 +19,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if(error.response?.status === 401){
+        // 401 (não autenticado / token expirado ou inválido) ou 403 (acesso negado): despacha o logout no Redux.
+        // O layout do sistema observa o usuário no store e, com ele nulo, renderiza a tela de login.
+        const status = error.response?.status;
+        if(status === 401 || status === 403){
             store.dispatch(logout());
         }
         return Promise.reject(error);
