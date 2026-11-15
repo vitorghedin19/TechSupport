@@ -85,7 +85,8 @@ public class SolicitanteService {
 
     public LoginResponse validarSolicitanteAutenticadoRetornaToken (LoginRequest request) { // NOVO
 
-        if (solicitanteRepository.existsSolicitanteByEmailAndSenha(request.email(), request.senha())){
+        // Ajuste: so deixa logar solicitante ATIVO (bloqueado/excluido recebe login invalido).
+        if (solicitanteRepository.existsSolicitanteByEmailAndSenhaAndStatus(request.email(), request.senha(), EnumStatusSolicitante.ATIVO)){
             var token = tokenService.gerarTokenSolicitante(request);
             return new LoginResponse(token);
         }

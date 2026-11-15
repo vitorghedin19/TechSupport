@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# node_modules na raiz nao deve ser versionado (o front tem o proprio em frontadmin/)
+node_modules/

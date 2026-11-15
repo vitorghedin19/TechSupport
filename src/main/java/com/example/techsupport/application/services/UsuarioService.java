@@ -34,7 +34,8 @@ public class UsuarioService {
 
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
-        if (usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
+        // Ajuste: so deixa logar usuario ATIVO (bloqueado/excluido recebe login invalido).
+        if (usuarioRepository.existsUsuarioByEmailAndSenhaAndStatus(request.email(), request.senha(), EnumStatusUsuario.ATIVO)){
             var token = tokenService.gerarTokenUsuario(request);
             return new LoginResponse(token);
         }

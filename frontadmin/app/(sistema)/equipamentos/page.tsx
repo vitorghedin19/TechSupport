@@ -28,7 +28,10 @@ export default function Equipamentos(){
         setEquipamentos (dados);
     
     } catch (error){
-        alert("Erro ao carregar dados!")
+        // Ajuste: em 401 o interceptor ja faz o logout, entao nao mostra o alert (so em outros erros).
+        if ((error as { response?: { status?: number } }).response?.status !== 401){
+            alert("Erro ao carregar dados!")
+        }
     }
     }
 

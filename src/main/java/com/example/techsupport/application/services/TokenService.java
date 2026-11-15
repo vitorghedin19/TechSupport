@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.techsupport.application.DTOs.EnumStatusSolicitante;
+import com.example.techsupport.application.DTOs.EnumStatusUsuario;
 import com.example.techsupport.application.DTOs.LoginRequest;
 import com.example.techsupport.application.DTOs.SolicitanteLogado;
 import com.example.techsupport.application.DTOs.UsuarioLogado;
@@ -84,8 +86,15 @@ public class TokenService {
             throw new IllegalArgumentException("Token Inválido!");
         }
 
+        // Ajuste: se o usuario/solicitante foi bloqueado ou excluido depois do login, o token deixa de valer (JwtFilter responde 401).
         if (tokenBanco.getUsuario() != null) {
+            if (tokenBanco.getUsuario().getStatus() != EnumStatusUsuario.ATIVO){
+                throw new IllegalArgumentException("Usuário inativo!");
+            }
             return new UsuarioLogado(tokenBanco.getUsuario());
+        }
+        if (tokenBanco.getSolicitante().getStatus() != EnumStatusSolicitante.ATIVO){
+            throw new IllegalArgumentException("Solicitante inativo!");
         }
         return new SolicitanteLogado(tokenBanco.getSolicitante());
     }

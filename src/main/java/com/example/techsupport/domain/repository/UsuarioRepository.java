@@ -16,6 +16,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
         // Usado no login: existe usuario com esse email E essa senha? SELECT ... WHERE email = ? AND senha = ?
         boolean existsUsuarioByEmailAndSenha(String email, String senha);
 
+        // Login so de usuario com o status informado (ATIVO): bloqueado/excluido nao entra.
+        boolean existsUsuarioByEmailAndSenhaAndStatus(String email, String senha, EnumStatusUsuario status);
+
         // Busca todos os usuarios com status DIFERENTE do informado. Ninguem chama esse metodo ainda.
         Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario statusUsuario);
 
