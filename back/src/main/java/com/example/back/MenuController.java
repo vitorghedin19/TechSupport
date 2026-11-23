@@ -1,5 +1,4 @@
-// Tela de menu (a "tela inicial" depois do login). É daqui que o usuário escolhe pra onde ir:
-// cadastro de ADM, cadastro de comunicação, ou sair do programa.
+// Menu do desktop (depois do login): cadastro de ADM, cadastro de técnico+empresa, comunicação ou sair.
 package com.example.back;
 
 import javafx.event.ActionEvent;
@@ -12,8 +11,7 @@ import java.io.IOException;
 
 public class MenuController {
 
-    // Clique no botão de cadastro de ADM: troca a tela atual pela cadastro-view.fxml (que usa o
-    // CadastroController).
+    // Cada botão troca a Scene pela tela correspondente.
     @FXML
     public void abrirCadastro(ActionEvent event) throws IOException {
 
@@ -38,7 +36,6 @@ public class MenuController {
 
     }
 
-    // Clique no botão de comunicação: mesma ideia, mas abre a comunicacao-view.fxml.
     @FXML
     public void abrirComunicacao(ActionEvent event) throws IOException{
 
@@ -49,7 +46,6 @@ public class MenuController {
         stage.setScene(scene);
     }
 
-    // Encerra o programa inteiro (fecha todas as janelas e finaliza o processo Java).
     @FXML
     public void sair(){
         System.exit(0);

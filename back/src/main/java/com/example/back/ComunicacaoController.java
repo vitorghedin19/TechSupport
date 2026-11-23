@@ -13,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.IOException;
 
+// Tela de cadastro de comunicação: POST /comunicacao/criar (rota liberada no back, sem token).
+// A secretKey fixa precisa ser igual ao spring.secret do back.
 public class ComunicacaoController {
 
     @FXML
@@ -38,14 +40,10 @@ public class ComunicacaoController {
 
     @FXML
     protected void voltar(ActionEvent event) throws IOException {
-        // Carrega o outro arquivo FXML (a tela de menu) e cria uma nova "Scene" (cena) com ele.
         FXMLLoader loader =
                 new FXMLLoader(getClass().getResource("/com/example/back/menu-view.fxml"));
 
         Scene scene = new Scene(loader.load());
-        // Pega a janela (Stage) atual a partir de quem disparou o evento (o botão clicado) e troca
-        // a cena dela pela nova. É assim que a navegação entre telas funciona no JavaFX (sem rota/URL
-        // como no Next.js - aqui é "troca a Scene dentro da mesma Stage").
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
     } //fecha o "voltar"

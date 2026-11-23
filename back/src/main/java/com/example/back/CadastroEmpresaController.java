@@ -17,8 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Cadastro de técnico + empresa. Buscar CNPJ: GET /empresa/consulta-cnpj/{cnpj} (back consulta a BrasilAPI e
+// devolve razão social/fantasia). Salvar: POST /usuarios/tecnico-empresa. As duas rotas são liberadas no back, sem token.
 public class CadastroEmpresaController {
 
+    // Precisa ser igual ao spring.secret do back.
     private static final String SECRET_KEY = "auvblavnb";
 
     @FXML
