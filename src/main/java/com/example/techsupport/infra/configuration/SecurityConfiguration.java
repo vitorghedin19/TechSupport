@@ -19,6 +19,8 @@ public class SecurityConfiguration {
     @Autowired
     private TokenService tokenService;
 
+    // Define quem acessa cada rota (por role). O Spring le de cima para baixo e vale a primeira regra que bater,
+    // por isso as rotas especificas vem antes das genericas. 401 = sem token valido; 403 = token valido sem a role.
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
 

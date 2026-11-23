@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+// Le do SecurityContext quem esta logado (colocado la pelo JwtFilter) e de qual empresa.
+// Os services usam isso para filtrar os dados pela empresa do token.
 @Component
 public class ContextoSegurancaService {
 
     @Autowired
     private EmpresaRepository empresaRepository;
 
+    // UsuarioLogado (tecnico/admin) ou SolicitanteLogado; null se nao houver autenticacao.
     public Object getLogado() {
         var autenticacao = SecurityContextHolder.getContext().getAuthentication();
         return autenticacao == null ? null : autenticacao.getPrincipal();
@@ -24,6 +27,7 @@ public class ContextoSegurancaService {
                 && usuario.authorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 
+    // Empresa vem sempre do token, nunca do request.
     public Long getEmpresaId() {
         Object logado = getLogado();
         if (logado instanceof UsuarioLogado usuario) {
@@ -40,6 +44,7 @@ public class ContextoSegurancaService {
         return empresaId == null ? null : empresaRepository.getReferenceById(empresaId);
     }
 
+    // Admin enxerga todas as empresas; os demais so a propria.
     public boolean podeAcessar(Empresa empresa) {
         if (isAdmin()) {
             return true;

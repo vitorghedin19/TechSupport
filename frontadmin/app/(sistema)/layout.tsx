@@ -9,6 +9,7 @@ import { RootState } from "../redux/store";
 import { useRouter } from "next/navigation";
 
 
+// Layout de todas as telas logadas. Sem usuário no Redux (não logou, F5 ou 401), redireciona para /login.
 export default function SistemaLayout({children}){
 
     const usuario = useSelector((state : RootState) => state.auth.usuario);

@@ -36,12 +36,12 @@ public class TokenService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private SolicitanteRepository solicitanteRepository; // NOVO
+    private SolicitanteRepository solicitanteRepository;
 
     @Autowired
     private TokenRepository tokenRepository;
 
-    // Gera token pro Usuario (Tecnico/Admin) - mesma logica de antes, so renomeado.
+    // Gera o JWT (subject = email) e grava na tabela token vinculado ao Usuario (tecnico/admin).
     public String gerarTokenUsuario(LoginRequest loginRequestDto){
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -57,7 +57,7 @@ public class TokenService {
         return token;
     }
 
-    // NOVO: mesma logica, so que busca e salva o token vinculado a um Solicitante.
+    // Mesmo fluxo, mas o token fica vinculado ao Solicitante.
     public String gerarTokenSolicitante(LoginRequest loginRequestDto){
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -73,8 +73,8 @@ public class TokenService {
         return token;
     }
 
-    // AJUSTE: retorna Object porque agora pode vir um UsuarioLogado OU um SolicitanteLogado -
-    // quem decide qual e o JwtFilter, checando com instanceof.
+    // Valida a assinatura do JWT e confere se o token existe no banco.
+    // Retorna Object porque pode ser UsuarioLogado ou SolicitanteLogado (o JwtFilter separa com instanceof).
     public Object verificarToken(String token) throws JWTVerificationException {
 
         Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -86,7 +86,7 @@ public class TokenService {
             throw new IllegalArgumentException("Token Inválido!");
         }
 
-        // Ajuste: se o usuario/solicitante foi bloqueado ou excluido depois do login, o token deixa de valer (JwtFilter responde 401).
+        // Bloqueado/excluido depois do login: o token deixa de valer (JwtFilter responde 401).
         if (tokenBanco.getUsuario() != null) {
             if (tokenBanco.getUsuario().getStatus() != EnumStatusUsuario.ATIVO){
                 throw new IllegalArgumentException("Usuário inativo!");
@@ -99,6 +99,7 @@ public class TokenService {
         return new SolicitanteLogado(tokenBanco.getSolicitante());
     }
 
+    // Expiracao = agora + spring.expiracao (minutos), no fuso -03:00.
     private Instant getDataExpiracao(){
         var dataAtual = LocalDateTime.now();
         var dataFutura = dataAtual.plusMinutes(expiracao);
