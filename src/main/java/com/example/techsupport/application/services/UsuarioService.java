@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+// Regras de Usuario (tecnico/admin): login, CRUD filtrado pela empresa do token e criacao via desktop (secretKey).
+// Admin so consulta (a rota de escrita e bloqueada no SecurityConfiguration); tecnico nao enxerga admins.
 @Service
 public class UsuarioService {
 
@@ -34,7 +36,7 @@ public class UsuarioService {
 
     public LoginResponse validarUsuarioAutenticadoRetornaToken (LoginRequest request) {
 
-        // Ajuste: so deixa logar usuario ATIVO (bloqueado/excluido recebe login invalido).
+        // So loga usuario ATIVO; bloqueado/excluido cai no login invalido (null).
         if (usuarioRepository.existsUsuarioByEmailAndSenhaAndStatus(request.email(), request.senha(), EnumStatusUsuario.ATIVO)){
             var token = tokenService.gerarTokenUsuario(request);
             return new LoginResponse(token);
@@ -42,6 +44,7 @@ public class UsuarioService {
         return null;
     }
 
+    // Admin acessa qualquer um; tecnico so usuarios (nao admin) da propria empresa.
     private boolean podeAcessar(Usuario usuario){
         if (contexto.isAdmin()){
             return true;
@@ -73,6 +76,7 @@ public class UsuarioService {
 
     }
 
+    // Usado pelo desktop: so cria se a secretKey for igual ao spring.secret.
     public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
 
         if (!criarAdminRequest.secretKey().equals(secret)){
@@ -87,6 +91,7 @@ public class UsuarioService {
 
     }
 
+    // Usado pelo desktop: cria a empresa e o tecnico dela juntos (@Transactional: se um falhar, nenhum e salvo).
     @Transactional
     public CriarTecnicoEmpresaResponse criarTecnicoComEmpresa(CriarTecnicoEmpresaRequest request) {
 
@@ -113,6 +118,7 @@ public class UsuarioService {
 
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
 
+        // id 0 = novo usuario, ja na empresa de quem esta logado; senao edita o existente.
         if (id == 0L){
             Usuario usuarioBanco = new Usuario(usuario);
             usuarioBanco.setEmpresa(contexto.getEmpresaDoLogado());

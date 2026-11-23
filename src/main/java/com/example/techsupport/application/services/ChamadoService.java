@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+// Regras de Chamado. Solicitante: so os que ele abriu. Tecnico: os da empresa. Admin: todos, so consulta.
+// A empresa do chamado vem do token. Chamado fora do alcance volta como null (o controller responde 404).
 @Service
 public class ChamadoService {
 

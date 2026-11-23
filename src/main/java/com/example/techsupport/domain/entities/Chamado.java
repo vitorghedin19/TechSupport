@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// Chamado -> tabela chamado. Muitos chamados para um solicitante, uma empresa e (opcional) um equipamento.
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class Chamado {
     private String descricao;
     private String prioridade;
     private EnumStatusChamado status = EnumStatusChamado.ABERTO;
-    private String solucao; // NOVO: so e preenchido quando o chamado e resolvido
+    private String solucao; // so e preenchida quando o chamado e resolvido
 
     // Muitos chamados para UM solicitante: guarda quem abriu o chamado (coluna solicitante_id)
     @ManyToOne

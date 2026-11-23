@@ -2,6 +2,7 @@ package com.example.techsupport.application.DTOs;
 
 import com.example.techsupport.domain.entities.Solicitante;
 
+// Dados do solicitante que ficam no SecurityContext (montado no JwtFilter). Leva a empresa e a role.
 public record SolicitanteLogado(Long id, String email, Long empresaId,
                                 java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> authorities) {
 

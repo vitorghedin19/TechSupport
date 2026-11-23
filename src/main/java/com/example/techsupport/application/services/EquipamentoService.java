@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// Regras de Equipamento: tecnico so ve/edita os da propria empresa (empresa vem do token); admin so consulta.
 @Service
 public class EquipamentoService {
 

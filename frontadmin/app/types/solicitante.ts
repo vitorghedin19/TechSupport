@@ -1,5 +1,5 @@
-// Solicitante: pessoa que abre um chamado (diferente do Usuario/Técnico, que é quem
-// atende). Mesmo padrão de classe + interface de props das outras entidades.
+// Solicitante: quem abre chamados (o Usuario/técnico é quem atende). É o único com o campo "setor",
+// e o usePerfil usa isso para reconhecer o solicitante.
 export class Solicitante{
 
     constructor(

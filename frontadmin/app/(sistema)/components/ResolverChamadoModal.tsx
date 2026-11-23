@@ -9,6 +9,7 @@ interface ResolverChamadoModalProps {
     aoConfirmar: (solucao: string) => Promise<void>
 }
 
+// Modal do técnico para resolver: a solução é obrigatória (botão desabilitado se vazia; o back também exige).
 export default function ResolverChamadoModal({ chamado, aoCancelar, aoConfirmar }: ResolverChamadoModalProps) {
 
     const [solucao, setSolucao] = useState("");

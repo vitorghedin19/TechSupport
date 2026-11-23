@@ -1,4 +1,4 @@
-// Acesso ao banco para Usuario. Alem dos metodos prontos, tem 2 consultas "derivadas do nome":
+// Acesso ao banco para Usuario. Alem dos metodos prontos, tem consultas "derivadas do nome":
 // o Spring le o nome do metodo e monta o SQL sozinho.
 package com.example.techsupport.domain.repository;
 
@@ -13,15 +13,16 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-        // Usado no login: existe usuario com esse email E essa senha? SELECT ... WHERE email = ? AND senha = ?
+        // Versao antiga do login (sem checar status); hoje o login usa a versao com status abaixo.
         boolean existsUsuarioByEmailAndSenha(String email, String senha);
 
         // Login so de usuario com o status informado (ATIVO): bloqueado/excluido nao entra.
         boolean existsUsuarioByEmailAndSenhaAndStatus(String email, String senha, EnumStatusUsuario status);
 
-        // Busca todos os usuarios com status DIFERENTE do informado. Ninguem chama esse metodo ainda.
+        // Usuarios com status DIFERENTE do informado. Nenhum codigo usa esse metodo hoje.
         Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario statusUsuario);
 
+        // Usuarios de uma empresa (usado na listagem do tecnico).
         List<Usuario> getUsuariosByEmpresa_Id(long empresa);
 
 }

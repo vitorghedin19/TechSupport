@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+// GET /empresa/consulta-cnpj/{cnpj}: usado pelo desktop, sem token.
 @RequestMapping("/empresa")
 @Tag(name = "Empresa", description = "Endpoints de apoio ao cadastro de empresas, com consulta externa de CNPJ.")
 public class EmpresaController {

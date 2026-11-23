@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// Form de equipamento, usado no novo e no editar (com equipamentoExistente = edição).
 export default function EquipamentoForm({equipamentoExistente}:EquipamentoFormProps){
 
     const router = useRouter();

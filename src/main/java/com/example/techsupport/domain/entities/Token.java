@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+// Token -> tabela token. Guarda os JWTs emitidos, ligados a um Usuario OU a um Solicitante (o outro fica null).
+// O JwtFilter so aceita token que existe aqui.
 @Entity
 @Data
 @NoArgsConstructor

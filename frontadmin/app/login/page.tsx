@@ -7,6 +7,8 @@ import { buscarUsuarioLogado } from "../services/usuarioService";
 import { buscarSolicitanteLogado } from "../services/solicitanteService";
 import { useDispatch } from "react-redux";
 
+// Fluxo: loginBack > definirToken > tenta buscarUsuarioLogado (técnico/admin) > se falhar (403), tenta buscarSolicitanteLogado.
+// Em qualquer erro faz logout e mostra alerta.
 export default function Login(){
 
     const router = useRouter();

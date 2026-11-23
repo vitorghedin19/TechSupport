@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { Usuario } from "@/app/types/usuario";
 import { consultaUsuarioPorId } from "@/app/services/usuarioService";
 
+// Rota dinâmica /usuarios/[codigo]/editar: pega o código da URL (useParams, vem como string, por isso Number()),
+// busca o registro no back e entrega ao form.
 export default function EditarUsuario(){
 
     const parametro = useParams();

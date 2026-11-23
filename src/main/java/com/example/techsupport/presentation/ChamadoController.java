@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+// Rotas de Chamado. PATCH /{id}/resolver exige a solucao; PATCH /{id}/status nao resolve. Quem pode o que: SecurityConfiguration.
 @RequestMapping("/chamado")
 @Tag(name = "Chamado", description = "Endpoints responsáveis pelo gerenciamento de chamados do sistema TechSupport, permitindo consultar e cadastrar chamados.")
 public class ChamadoController {

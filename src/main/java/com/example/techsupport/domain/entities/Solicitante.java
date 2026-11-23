@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+// Solicitante -> tabela solicitante. Quem abre chamados; role fixa ROLE_SOLICITANTE. Implementa UserDetails
+// para o Spring Security ler a role. Pertence a uma empresa.
 @Entity
 @Data
 @NoArgsConstructor

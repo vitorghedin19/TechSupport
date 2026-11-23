@@ -7,6 +7,8 @@ import { Solicitante } from "@/app/types/solicitante";
 import { useEffect, useState } from "react";
 import { consultaSolicitantePorId } from "@/app/services/solicitanteService";
 
+// Rota dinâmica /solicitantes/[codigo]/editar: pega o código da URL (useParams, vem como string, por isso Number()),
+// busca o registro no back e entrega ao form.
 export default function EditarSolicitante(){
 
     const parametro = useParams();

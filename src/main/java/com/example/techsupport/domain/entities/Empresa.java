@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.util.List;
 
+// Empresa -> tabela empresa. E o que separa os dados (multiempresa): usuarios, solicitantes, equipamentos e chamados apontam para ela.
 @Data
 @Entity
 @NoArgsConstructor

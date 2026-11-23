@@ -11,6 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+// Implementacao da porta: consulta o CNPJ na BrasilAPI via HttpClient e converte o JSON em BrasilApiCnpjResponse.
 @Component
 public class BrasilApiCnpjExternalRepository implements IConsultaCnpjExternalRepository {
 

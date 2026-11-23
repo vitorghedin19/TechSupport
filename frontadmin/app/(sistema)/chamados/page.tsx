@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import ResolverChamadoModal from "../components/ResolverChamadoModal";
 import VerSolucaoModal from "../components/VerSolucaoModal";
 
+// Lista de chamados. O back já devolve só o que cada perfil pode ver; aqui só se escondem os botões:
+// admin só consulta; solicitante não muda status nem resolve (isso é do técnico).
 export default function Chamados(){
 
    
@@ -29,7 +31,7 @@ export default function Chamados(){
         setChamados (dados);
     
     } catch (error){
-        // Ajuste: em 401 o interceptor ja faz o logout, entao nao mostra o alert (so em outros erros).
+        // 401: o interceptor do api.ts já fez logout, então não mostra alert (só nos outros erros).
         if ((error as { response?: { status?: number } }).response?.status !== 401){
             alert("Erro ao carregar dados!")
         }

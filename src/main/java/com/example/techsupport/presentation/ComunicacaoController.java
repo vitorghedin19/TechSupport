@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+// POST /comunicacao/criar e usado pelo desktop (liberado sem token, protegido pela secretKey).
 @RequestMapping("/comunicacao")
 @Tag(name = "Comunicação", description = "Endpoints responsáveis pelo gerenciamento de tipos de comunicações do sistema TechSupport, permitindo consultar e cadastrar.")
 public class ComunicacaoController {

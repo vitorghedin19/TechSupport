@@ -8,6 +8,8 @@ import { Equipamento } from "@/app/types/equipamento";
 import { consultaEquipamentoPorId } from "@/app/services/equipamentoService";
 
 
+// Rota dinâmica /equipamentos/[codigo]/editar: pega o código da URL (useParams, vem como string, por isso Number()),
+// busca o registro no back e entrega ao form.
 export default function EditarEquipamento(){
 
     const parametro = useParams();

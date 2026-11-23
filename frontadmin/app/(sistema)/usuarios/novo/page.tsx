@@ -9,6 +9,7 @@ import UsuarioForm from "../components/UsuarioForm";
 // Note que esse arquivo NÃO tem "use client": ele não usa hooks nem interatividade
 // própria, só renderiza JSX estático + o componente de formulário — por isso pode
 // continuar sendo um Server Component por padrão.
+// Rota /usuarios/novo: só a moldura da tela; o formulário e o POST estão no componente de form.
 export default function CadastroUsuario(){
 
     return(

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+// Resposta da BrasilAPI. @JsonProperty liga os nomes do JSON (razao_social) aos campos Java; o resto do JSON e ignorado.
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BrasilApiCnpjResponse {

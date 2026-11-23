@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ChamadoForm from "../components/ChamadoForm";
 
+// Rota /chamados/novo: só a moldura da tela; o formulário e o POST estão no componente de form.
 export default function CadastroChamado(){
 
     return(

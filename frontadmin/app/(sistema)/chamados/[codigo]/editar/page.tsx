@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { Chamado } from "@/app/types/chamado";
 import { consultaChamadoPorId } from "@/app/services/chamadoService";
 
+// Rota dinâmica /chamados/[codigo]/editar: pega o código da URL (useParams, vem como string, por isso Number()),
+// busca o registro no back e entrega ao form.
 export default function EditarChamado(){
 
     const parametro = useParams();

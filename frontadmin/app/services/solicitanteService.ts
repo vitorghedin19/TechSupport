@@ -1,6 +1,7 @@
 import { Solicitante } from "../types/solicitante";
 import api from "./api";
 
+// Chamadas HTTP de solicitante. buscarSolicitanteLogado só funciona com token de solicitante.
 export async function buscarListaSolicitantes(): Promise<Solicitante[]> {
     const dados = await api.get<Solicitante[]>("/solicitante");
     if (dados.status == 200) {

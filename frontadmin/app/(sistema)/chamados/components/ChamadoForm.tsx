@@ -11,6 +11,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// Form de chamado, usado no novo e no editar (com chamadoExistente = edição). Ao salvar com equipamento,
+// registra o uso no Redux para o select mostrar os recentes no topo.
 export default function ChamadoForm({chamadoExistente}:ChamadoFormProps){
 
     const router = useRouter();

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// Form de solicitante, usado no novo e no editar (com solicitanteExistente = edição).
 export default function SolicitanteForm({solicitanteExistente}:SolicitanteFormProps){
 
     const router = useRouter();

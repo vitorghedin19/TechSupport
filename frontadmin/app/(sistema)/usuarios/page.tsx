@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 
+// Lista de usuários da empresa do token. Admin só consulta: os botões de escrita ficam escondidos (ehAdmin).
 export default function Usuarios(){
 
    
@@ -28,7 +29,7 @@ export default function Usuarios(){
         setUsuarios (dados); 
     
     } catch (error){
-        // Ajuste: em 401 o interceptor ja faz o logout, entao nao mostra o alert (so em outros erros).
+        // 401: o interceptor do api.ts já fez logout, então não mostra alert (só nos outros erros).
         if ((error as { response?: { status?: number } }).response?.status !== 401){
             alert("Erro ao carregar dados!")
         }

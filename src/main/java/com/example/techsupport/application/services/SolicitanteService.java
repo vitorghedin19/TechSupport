@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// Regras de Solicitante: CRUD filtrado pela empresa do token e login proprio (token vinculado ao Solicitante).
 @Service
 public class SolicitanteService {
 
@@ -83,9 +84,9 @@ public class SolicitanteService {
     }
 
 
-    public LoginResponse validarSolicitanteAutenticadoRetornaToken (LoginRequest request) { // NOVO
+    public LoginResponse validarSolicitanteAutenticadoRetornaToken (LoginRequest request) {
 
-        // Ajuste: so deixa logar solicitante ATIVO (bloqueado/excluido recebe login invalido).
+        // So loga solicitante ATIVO; bloqueado/excluido cai no login invalido (null).
         if (solicitanteRepository.existsSolicitanteByEmailAndSenhaAndStatus(request.email(), request.senha(), EnumStatusSolicitante.ATIVO)){
             var token = tokenService.gerarTokenSolicitante(request);
             return new LoginResponse(token);

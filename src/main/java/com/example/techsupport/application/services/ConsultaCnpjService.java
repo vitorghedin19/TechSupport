@@ -5,6 +5,8 @@ import com.example.techsupport.domain.interfaces.IConsultaCnpjExternalRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+// Consulta de CNPJ: valida os 14 digitos e pede os dados a porta IConsultaCnpjExternalRepository
+// (implementada em infra/external). Se nao houver nome fantasia, usa a razao social.
 @Service
 public class ConsultaCnpjService {
 

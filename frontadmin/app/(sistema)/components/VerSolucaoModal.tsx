@@ -7,6 +7,7 @@ interface VerSolucaoModalProps {
     aoFechar: () => void
 }
 
+// Modal só de leitura da solução de um chamado resolvido.
 export default function VerSolucaoModal({ chamado, aoFechar }: VerSolucaoModalProps) {
 
     return (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import EquipamentoForm from "../components/EquipamentoForm";
 
+// Rota /equipamentos/novo: só a moldura da tela; o formulário e o POST estão no componente de form.
 export default function CadastroEquipamento(){
 
     return(

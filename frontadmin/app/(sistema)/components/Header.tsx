@@ -4,6 +4,7 @@ import { logout } from "@/app/redux/slices/authSlice";
 import { store } from "@/app/redux/store";
 import { useDispatch } from "react-redux";
 
+// Topo: nome de quem está logado (vem do Redux) e botão Sair (dispatch logout).
 export default function Header(){
 
     const usuario = store.getState().auth.usuario;

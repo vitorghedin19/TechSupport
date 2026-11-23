@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+// Comunicacao -> tabela comunicacao (cadastro simples feito pelo desktop).
 @Entity
 @Data
 @NoArgsConstructor

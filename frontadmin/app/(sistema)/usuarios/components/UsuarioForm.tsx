@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// Form de usuário, usado no novo e no editar (com usuarioExistente = edição).
 export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
 
     const router = useRouter();

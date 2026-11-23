@@ -1,6 +1,8 @@
 import { Chamado } from "../types/chamado";
 import api from "./api";
 
+// Chamadas HTTP de chamado (axios via api.ts, que já manda o token). O back filtra por perfil/empresa.
+// atualizarStatusChamado sem novoStatus avança ABERTO > EM_ANDAMENTO > FECHADO; RESOLVIDO só pelo resolverChamado (exige a solução).
 export async function buscarListaChamados(): Promise<Chamado[]> {
     const dados = await api.get<Chamado[]>("/chamado");
     if (dados.status == 200) {

@@ -1,6 +1,7 @@
 import { Usuario } from "../types/usuario";
 import api from "./api";
 
+// Chamadas HTTP de usuário (técnico/admin). buscarUsuarioLogado devolve quem está logado a partir do token.
 export async function buscarListaUsuarios() : Promise<Usuario[]> {
     const dados = await api.get<Usuario[]>("/usuarios");
     if(dados.status ==200){
@@ -14,6 +15,7 @@ export async function deletarUsuario(id:number):Promise<number> {
     return dados.status;
 }
 
+// Alterna ATIVO <-> BLOQUEADO.
 export async function atualizarStatusUsuario(usuario:Usuario):Promise<void> {
     var novoStatus = {};
     if (usuario.status === "ATIVO") {

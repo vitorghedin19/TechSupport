@@ -155,6 +155,7 @@ const estilosStatus: Record<string, string> = {
 
 const colunasMockup = "grid-cols-[3.25rem_7rem_9rem_7rem_3.5rem_6.5rem_1fr]";
 
+// Landing page (rota /): apresentação do TechSupport, sem login nem chamadas à API.
 export default function Home() {
   return (
     <div className="bg-slate-950 text-slate-200 font-sans antialiased selection:bg-blue-500 selection:text-white min-h-screen">

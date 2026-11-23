@@ -1,6 +1,7 @@
 import { Equipamento } from "../types/equipamento";
 import api from "./api";
 
+// Chamadas HTTP de equipamento (o back devolve só os da empresa do token).
 export async function buscarListaEquipamentos(): Promise<Equipamento[]> {
     const dados = await api.get<Equipamento[]>("/equipamento");
     if (dados.status == 200) {

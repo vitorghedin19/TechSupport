@@ -1,4 +1,4 @@
-// Entidade Equipamento -> tabela "equipamento".
+// Equipamento -> tabela equipamento. Pertence a uma empresa; exclusao e logica (status EXCLUIDO).
 package com.example.techsupport.domain.entities;
 
 import com.example.techsupport.application.DTOs.EnumStatusEquipamento;

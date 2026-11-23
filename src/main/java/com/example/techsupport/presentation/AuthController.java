@@ -41,7 +41,7 @@ public class AuthController {
 
         var resultado = usuarioService.validarUsuarioAutenticadoRetornaToken(loginRequest);
 
-        if (resultado == null) { // NOVO: se não achou como Usuario, tenta como Solicitante
+        if (resultado == null) { // não achou como Usuario: tenta como Solicitante
             resultado = solicitanteService.validarSolicitanteAutenticadoRetornaToken(loginRequest);
         }
 

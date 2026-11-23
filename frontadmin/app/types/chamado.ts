@@ -1,9 +1,5 @@
-// Chamado: entidade central do sistema (o "ticket" de suporte).
-// Repare que aqui não existe vínculo com Solicitante nem com o Usuario/Técnico
-// responsável — o objeto só tem título, descrição, prioridade e status. Se o professor
-// perguntar "quem abriu esse chamado?" ou "quem está atendendo?", vale mencionar que essa
-// classe do front, do jeito que está, não carrega essa relação (pode ser que o backend
-// tenha os IDs e o front simplesmente não esteja usando/exibindo ainda).
+// Chamado: o "ticket" de suporte. Só os campos que a tela usa; solicitante e empresa não vêm aqui:
+// o back os define pelo token (empresa) e pelo solicitante logado.
 export class Chamado{
 
     constructor(
@@ -11,7 +7,7 @@ export class Chamado{
         public titulo:string,
         public descricao:string,
         public prioridade:string,   // ex: "Alta", "Média", "Baixa"
-        public status:string,       // ex: "ABERTO", "EM_ANDAMENTO", "RESOLVIDO", "FECHADO", "ATRASADO", "EXCLUIDO"
+        public status:string,       // ex: "ABERTO", "EM_ANDAMENTO", "RESOLVIDO", "FECHADO", "EXCLUIDO"
         public solucao?:string,     // só vem preenchida depois que o chamado é resolvido
         public equipamentoId?:number | null,  // id do equipamento escolhido na caixa de seleção (chave estrangeira no back)
         public equipamentoNome?:string,       // nome do equipamento, só para exibir na tabela

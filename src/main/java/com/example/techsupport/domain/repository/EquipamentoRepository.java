@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> {
 
+    // Equipamentos de uma empresa.
     List<Equipamento> findByEmpresa_Id(Long empresaId);
 }

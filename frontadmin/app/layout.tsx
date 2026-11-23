@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 
+// Layout raiz de todo o site: envolve as telas com o StoreProvider (Redux).
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

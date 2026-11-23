@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// Comunicacao: cadastro feito pelo desktop. So salva se a secretKey for igual ao spring.secret.
 @Service
 public class ComunicacaoService {
 
